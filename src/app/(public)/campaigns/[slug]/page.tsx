@@ -6,14 +6,35 @@ import type { Metadata } from "next";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { formatCurrency, progressPercent, formatDate } from "@/lib/utils";
 import { MapPin, Users, Calendar, Package } from "lucide-react";
+import CampaignStats from "@/components/campaign/CampaignStats";
 
 type Props = { params: { slug: string } };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const supabase = createServerSupabaseClient();
-  const { data } = await supabase.from("campaigns").select("title, description").eq("slug", params.slug).single();
-  if (!data) return { title: "Campaign not found" };
-  return { title: data.title, description: data.description };
+  const { data: campaign } = await supabase
+    .from("campaigns")
+    .select("title, description, cover_image_url")
+    .eq("slug", params.slug)
+    .single();
+
+  if (!campaign) return { title: "Campaign not found" };
+
+  return {
+    title: campaign.title,
+    description: campaign.description,
+    openGraph: {
+      title: campaign.title,
+      description: campaign.description,
+      images: campaign.cover_image_url ? [{ url: campaign.cover_image_url }] : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: campaign.title,
+      description: campaign.description,
+      images: campaign.cover_image_url ? [campaign.cover_image_url] : [],
+    },
+  };
 }
 
 export default async function CampaignDetailPage({ params }: Props) {
@@ -138,54 +159,14 @@ export default async function CampaignDetailPage({ params }: Props) {
 
         {/* ── Right: Investment card ── */}
         <div className="lg:col-span-1">
-          <div className="card p-6 sticky top-24">
-            <div className="mb-5">
-              <div className="flex justify-between text-sm mb-1.5">
-                <span className="font-bold text-earth-800 text-lg">{formatCurrency(campaign.raised_amount)}</span>
-                <span className="text-earth-400">raised of {formatCurrency(campaign.target_amount)}</span>
-              </div>
-              <div className="progress-bar">
-                <div className="progress-fill" style={{ width: `${progress}%` }} />
-              </div>
-              <div className="flex justify-between text-xs text-earth-400 mt-1.5">
-                <span>{progress}% funded</span>
-                <span>{investorCount ?? 0} investors</span>
-              </div>
-            </div>
-
-            {isOpen ? (
-              <Link href={`/invest/${campaign.slug}`} className="btn-primary w-full text-center text-base py-3">
-                Invest in this campaign
-              </Link>
-            ) : (
-              <div className="rounded-md bg-forest-50 border border-forest-200 p-4 text-center text-sm text-forest-700 font-medium">
-                {campaign.status === "funded" ? "🎯 This campaign is fully funded!" : "✅ This campaign is completed."}
-              </div>
-            )}
-
-            <p className="text-xs text-earth-400 text-center mt-3">
-              Payments via card or Mobile Money (MTN, Vodafone)
-            </p>
-
-            <hr className="my-5 border-earth-100" />
-
-            <div className="space-y-3 text-sm text-earth-600">
-              <div className="flex justify-between">
-                <span>Status</span>
-                <span className="capitalize font-medium text-earth-800">{campaign.status}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Location</span>
-                <span className="font-medium text-earth-800">{campaign.region}</span>
-              </div>
-              {campaign.end_date && (
-                <div className="flex justify-between">
-                  <span>Closes</span>
-                  <span className="font-medium text-earth-800">{formatDate(campaign.end_date)}</span>
-                </div>
-              )}
-            </div>
-          </div>
+          <CampaignStats 
+            campaignId={campaign.id}
+            campaignSlug={campaign.slug}
+            initialRaisedAmount={campaign.raised_amount}
+            targetAmount={campaign.target_amount}
+            initialInvestorCount={investorCount ?? 0}
+            status={campaign.status}
+          />
         </div>
 
       </div>
