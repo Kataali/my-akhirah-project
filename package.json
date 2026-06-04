@@ -10,7 +10,7 @@
     "db:types": "supabase gen types typescript --project-id YOUR_PROJECT_ID > src/types/database.ts"
   },
   "dependencies": {
-    "@hookform/resolvers": "^3.9.0",
+    "@hookform/resolvers": "^3.10.0",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.106.2",
     "autoprefixer": "^10.4.27",
@@ -22,12 +22,12 @@
     "next-nprogress-bar": "^2.4.7",
     "react": "^18",
     "react-dom": "^18",
-    "react-hook-form": "^7.52.1",
+    "react-hook-form": "^7.77.0",
     "react-hot-toast": "^2.4.1",
     "resend": "^3.3.0",
     "sharp": "^0.33.4",
     "tailwind-merge": "^2.4.0",
-    "zod": "^3.23.8"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/node": "^20",
