@@ -4,17 +4,37 @@ import { createAdminClient } from "@/lib/supabase/server";
 import { verifyTransaction } from "@/lib/paystack";
 import { sendDonationReceipt } from "@/lib/email";
 import { markCampaignFundedIfEligible } from "@/lib/campaign-status";
+ 
+async function appendDebugLog(msg: string) {
+  try {
+    const fs = await import("fs");
+    const path = "/tmp/paystack-verify.log";
+    const line = `${new Date().toISOString()} ${msg}\n`;
+    try {
+      await fs.promises.appendFile(path, line, "utf8");
+    } catch (e) {
+      // ignore file write errors
+    }
+  } catch (e) {
+    // fs not available (Edge runtime) — no-op
+  }
+}
 
 export async function GET(req: NextRequest) {
   const reference = req.nextUrl.searchParams.get("reference");
   // Debug: log incoming verify request URL and reference
-  console.log("[payments/verify] incoming url:", req.url);
-  console.log("[payments/verify] reference:", reference);
+  console.error("[payments/verify] incoming url:", req.url);
+  console.error("[payments/verify] reference:", reference);
+  await appendDebugLog(`[incoming] url=${req.url} reference=${reference}`);
   // Log host headers to see which host Paystack used when redirecting
   try {
-    console.log('[payments/verify] host header:', req.headers.get('host'));
-    console.log('[payments/verify] x-forwarded-host:', req.headers.get('x-forwarded-host'));
-    console.log('[payments/verify] x-forwarded-for:', req.headers.get('x-forwarded-for'));
+    const host = req.headers.get('host');
+    const xfh = req.headers.get('x-forwarded-host');
+    const xff = req.headers.get('x-forwarded-for');
+    console.error('[payments/verify] host header:', host);
+    console.error('[payments/verify] x-forwarded-host:', xfh);
+    console.error('[payments/verify] x-forwarded-for:', xff);
+    await appendDebugLog(`[headers] host=${host} x-forwarded-host=${xfh} x-forwarded-for=${xff}`);
   } catch (err) {
     console.error('[payments/verify] error reading headers', err);
   }
