@@ -20,6 +20,7 @@ export default async function AdminReportsPage() {
     .order("created_at", { ascending: false });
 
   const reportedCampaignIds = new Set(reports?.map((r) => r.campaign_id));
+  const awaitingCampaigns = (campaigns ?? []).filter((campaign) => !reportedCampaignIds.has(campaign.id));
 
   return (
     <div>
@@ -29,13 +30,11 @@ export default async function AdminReportsPage() {
       </div>
 
       {/* Campaigns awaiting reports */}
-      {campaigns?.filter((c) => !reportedCampaignIds.has(c.id)).length > 0 && (
+      {awaitingCampaigns.length > 0 && (
         <div className="mb-8">
           <h2 className="font-semibold text-earth-700 mb-3 text-sm uppercase tracking-wide">Awaiting reports</h2>
           <div className="space-y-3">
-            {campaigns
-              ?.filter((c) => !reportedCampaignIds.has(c.id))
-              .map((campaign) => (
+            {awaitingCampaigns.map((campaign) => (
                 <div key={campaign.id} className="card p-4 flex items-center justify-between">
                   <div>
                     <p className="font-medium text-earth-800">{campaign.title}</p>
