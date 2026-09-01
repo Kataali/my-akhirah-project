@@ -33,6 +33,9 @@ export async function POST(req: NextRequest) {
 
     const reference = generateReference(user.id);
     const callback_url = `${process.env.NEXT_PUBLIC_APP_URL}/api/payments/verify?reference=${reference}`;
+    // Temporary debug log: record which callback URL is being sent to Paystack
+    // This will appear in Render logs after we push/deploy.
+    console.log("[payments/initialize] callback_url:", callback_url);
 
     // Create pending contribution record
     await supabase.from("contributions").insert({
