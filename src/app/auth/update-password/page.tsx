@@ -3,13 +3,14 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function UpdatePasswordPage() {
   const router = useRouter();
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     createClient().auth.getUser().then(({ data: { user } }) => {
@@ -38,7 +39,20 @@ export default function UpdatePasswordPage() {
         </div>
         <div>
           <label className="label">New password</label>
-          <input type="password" className="input" value={password} onChange={(event) => setPassword(event.target.value)} minLength={8} required autoComplete="new-password" />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              className="input"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              minLength={8}
+              required
+              autoComplete="new-password"
+            />
+            <button type="button" onClick={() => setShowPassword((s) => !s)} className="absolute right-3 top-1/2 -translate-y-1/2 text-earth-400">
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
         </div>
         <button type="submit" disabled={loading} className="btn-primary w-full flex justify-center gap-2">
           {loading && <Loader2 className="animate-spin" size={18} />}
