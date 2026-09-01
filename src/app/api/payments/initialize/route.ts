@@ -59,6 +59,9 @@ export async function POST(req: NextRequest) {
       callback_url,
     });
 
+    // Debug: log Paystack transaction fields returned to the client
+    console.log("[payments/initialize] paystack transaction authorization_url:", transaction.authorization_url);
+
     return NextResponse.json(transaction);
   } catch (err) {
     console.error("[payments/initialize]", err);

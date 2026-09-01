@@ -10,6 +10,14 @@ export async function GET(req: NextRequest) {
   // Debug: log incoming verify request URL and reference
   console.log("[payments/verify] incoming url:", req.url);
   console.log("[payments/verify] reference:", reference);
+  // Log host headers to see which host Paystack used when redirecting
+  try {
+    console.log('[payments/verify] host header:', req.headers.get('host'));
+    console.log('[payments/verify] x-forwarded-host:', req.headers.get('x-forwarded-host'));
+    console.log('[payments/verify] x-forwarded-for:', req.headers.get('x-forwarded-for'));
+  } catch (err) {
+    console.error('[payments/verify] error reading headers', err);
+  }
   if (!reference) {
     return NextResponse.redirect(new URL("/campaigns?payment=invalid", req.url));
   }
