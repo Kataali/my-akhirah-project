@@ -17,6 +17,7 @@ interface CampaignEditFormProps {
 export default function CampaignEditForm({ campaign, updateAction }: CampaignEditFormProps) {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const availableStatuses = campaign.status === "draft" ? ["draft", "active"] : [campaign.status];
 
   const {
     register,
@@ -154,11 +155,20 @@ export default function CampaignEditForm({ campaign, updateAction }: CampaignEdi
             {...register("status")} 
             className="input"
           >
-            <option value="draft">Draft (not visible to public)</option>
-            <option value="active">Active (live now)</option>
-            <option value="funded">Funded (target reached)</option>
-            <option value="completed">Completed (impact reported)</option>
+            {availableStatuses.map((status) => (
+              <option key={status} value={status}>
+                {status === "draft" && "Draft (not visible to public)"}
+                {status === "active" && "Active (live now)"}
+                {status === "funded" && "Funded (target reached)"}
+                {status === "completed" && "Completed (impact reported)"}
+              </option>
+            ))}
           </select>
+          {campaign.status !== "draft" && (
+            <p className="text-xs text-earth-400 mt-1">
+              This status is managed automatically by confirmed payments and published impact reports.
+            </p>
+          )}
         </div>
 
         <div className="md:col-span-2">

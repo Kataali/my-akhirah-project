@@ -12,8 +12,25 @@ async function updateCampaign(formData: FormData) {
   const admin = createAdminClient();
 
   const id = formData.get("id") as string;
+  const requestedStatus = formData.get("status") as "draft" | "active" | "funded" | "completed";
   const title = formData.get("title") as string;
   const slug = slugify(title);
+
+  const { data: existingCampaign, error: campaignError } = await admin
+    .from("campaigns")
+    .select("status")
+    .eq("id", id)
+    .single();
+
+  if (campaignError || !existingCampaign) throw new Error("Campaign not found");
+
+  const permittedStatuses = existingCampaign.status === "draft"
+    ? ["draft", "active"]
+    : [existingCampaign.status];
+
+  if (!permittedStatuses.includes(requestedStatus)) {
+    throw new Error("Campaign status can only move from draft to active. Funding and completion are system-managed.");
+  }
 
   // Parse items_needed JSON
   let items_needed = [];
@@ -31,7 +48,7 @@ async function updateCampaign(formData: FormData) {
     location: formData.get("location") as string,
     region: formData.get("region") as string,
     target_amount: parseFloat(formData.get("target_amount") as string),
-    status: (formData.get("status") as "draft" | "active" | "funded" | "completed") ?? "draft",
+    status: requestedStatus,
     items_needed,
     beneficiaries_count: parseInt(formData.get("beneficiaries_count") as string) || null,
     end_date: (formData.get("end_date") as string) || null,

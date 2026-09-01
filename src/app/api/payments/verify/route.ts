@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
 import { verifyTransaction } from "@/lib/paystack";
 import { sendDonationReceipt } from "@/lib/email";
+import { markCampaignFundedIfEligible } from "@/lib/campaign-status";
 
 export async function GET(req: NextRequest) {
   const reference = req.nextUrl.searchParams.get("reference");
@@ -43,6 +44,9 @@ export async function GET(req: NextRequest) {
         paystack_transaction_id: String(tx.id),
       })
       .eq("paystack_reference", reference);
+
+    // Fallback for delayed or missed payment webhooks.
+    await markCampaignFundedIfEligible(contribution.campaign_id);
 
     // Send receipt email
     if (contribution.profiles?.email) {

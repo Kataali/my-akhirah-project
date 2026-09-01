@@ -12,6 +12,15 @@ async function createReport(formData: FormData) {
   const admin = createAdminClient();
 
   const campaign_id = formData.get("campaign_id") as string;
+  const { data: campaign, error: campaignError } = await admin
+    .from("campaigns")
+    .select("status")
+    .eq("id", campaign_id)
+    .single();
+
+  if (campaignError || !campaign || !["funded", "completed"].includes(campaign.status)) {
+    throw new Error("Impact reports can only be created for funded campaigns.");
+  }
 
   // Parse photos_urls (comma-separated)
   const photosRaw = (formData.get("photos_urls") as string) ?? "";
@@ -41,7 +50,11 @@ async function createReport(formData: FormData) {
 
   // Mark campaign as completed if publishing
   if (published) {
-    await admin.from("campaigns").update({ status: "completed" }).eq("id", campaign_id);
+    await admin
+      .from("campaigns")
+      .update({ status: "completed" })
+      .eq("id", campaign_id)
+      .eq("status", "funded");
   }
 
   redirect("/admin/reports");
