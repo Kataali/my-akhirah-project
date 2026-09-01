@@ -7,6 +7,7 @@ import { LayoutDashboard, Megaphone, Users, FileText, LogOut, ChevronLeft } from
 import SubmitButton from "@/components/ui/SubmitButton";
 
 const ADMIN_NAV = [
+  { href: "/dashboard", label: "Dashboard", icon: ChevronLeft },
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
   { href: "/admin/campaigns", label: "Campaigns", icon: Megaphone },
   { href: "/admin/investors", label: "Investors", icon: Users },
