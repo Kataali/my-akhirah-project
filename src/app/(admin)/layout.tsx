@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { LayoutDashboard, Megaphone, Users, FileText, LogOut } from "lucide-react";
+import { LayoutDashboard, Megaphone, Users, FileText, LogOut, ChevronLeft } from "lucide-react";
 import SubmitButton from "@/components/ui/SubmitButton";
 
 const ADMIN_NAV = [
@@ -31,8 +31,16 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       {/* Sidebar */}
       <aside className="w-60 bg-earth-900 text-white flex flex-col shrink-0">
         <div className="px-5 py-5 border-b border-earth-700">
-          <p className="font-display text-sm font-bold text-white">My Akhirah Project</p>
-          <p className="text-xs text-earth-400 mt-0.5">Admin Panel</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-display text-sm font-bold text-white">My Akhirah Project</p>
+              <p className="text-xs text-earth-400 mt-0.5">Admin Panel</p>
+            </div>
+            <Link href="/dashboard" className="flex items-center gap-2 text-xs text-earth-300 hover:text-white">
+              <ChevronLeft size={14} />
+              <span>Dashboard</span>
+            </Link>
+          </div>
         </div>
 
         <nav className="flex-1 p-3 space-y-1">
