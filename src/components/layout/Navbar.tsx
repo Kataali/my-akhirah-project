@@ -2,7 +2,7 @@
 // src/components/layout/Navbar.tsx
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Loader2, Menu, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 
@@ -14,13 +14,19 @@ const NAV_LINKS = [
 
 export default function Navbar({ user }: { user?: { email: string; role?: string } | null }) {
   const [open, setOpen] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
   const router = useRouter();
   const supabase = createClient();
 
   async function handleSignOut() {
-    await supabase.auth.signOut();
-    router.push("/");
-    router.refresh();
+    setSigningOut(true);
+    try {
+      await supabase.auth.signOut();
+      router.push("/");
+      router.refresh();
+    } finally {
+      setSigningOut(false);
+    }
   }
 
   return (
@@ -50,7 +56,10 @@ export default function Navbar({ user }: { user?: { email: string; role?: string
                 <Link href="/admin" className="btn-ghost text-xs">Admin Panel</Link>
               )}
               <Link href="/dashboard" className="btn-ghost">Dashboard</Link>
-              <button onClick={handleSignOut} className="btn-secondary text-sm">Sign out</button>
+              <button onClick={handleSignOut} disabled={signingOut} className="btn-secondary text-sm">
+                {signingOut && <Loader2 className="animate-spin" size={16} />}
+                {signingOut ? "Signing out..." : "Sign out"}
+              </button>
             </>
           ) : (
             <>
@@ -78,7 +87,10 @@ export default function Navbar({ user }: { user?: { email: string; role?: string
             {user ? (
               <>
                 <Link href="/dashboard" className="btn-secondary w-full text-center" onClick={() => setOpen(false)}>Dashboard</Link>
-                <button onClick={handleSignOut} className="btn-ghost w-full">Sign out</button>
+                <button onClick={handleSignOut} disabled={signingOut} className="btn-ghost w-full">
+                  {signingOut && <Loader2 className="animate-spin" size={16} />}
+                  {signingOut ? "Signing out..." : "Sign out"}
+                </button>
               </>
             ) : (
               <>
