@@ -30,6 +30,24 @@ export function createServerSupabaseClient() {
   );
 }
 
+/** Authorize a privileged Server Action before using the service-role client. */
+export async function requireAdmin() {
+  const supabase = createServerSupabaseClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) throw new Error("Unauthorized");
+
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (error || profile?.role !== "admin") throw new Error("Forbidden");
+
+  return user;
+}
+
 // Admin client with service role (bypasses RLS — server-only)
 import { createClient } from "@supabase/supabase-js";
 

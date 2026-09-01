@@ -1,14 +1,12 @@
 import { redirect } from "next/navigation";
-import { createAdminClient, createServerSupabaseClient } from "@/lib/supabase/server";
+import { createAdminClient, requireAdmin } from "@/lib/supabase/server";
 import { slugify } from "@/lib/utils";
 import CampaignNewForm from "@/components/admin/CampaignNewForm";
 
 async function createCampaign(formData: FormData) {
   "use server";
 
-  const supabase = createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Unauthorized");
+  const user = await requireAdmin();
 
   const admin = createAdminClient();
 

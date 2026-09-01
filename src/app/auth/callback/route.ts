@@ -1,11 +1,12 @@
 // src/app/auth/callback/route.ts
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
+import { safeRedirect } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
   const { searchParams, origin } = new URL(req.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/dashboard";
+  const next = safeRedirect(searchParams.get("next"));
 
   if (code) {
     const supabase = createServerSupabaseClient();

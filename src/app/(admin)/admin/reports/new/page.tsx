@@ -1,15 +1,13 @@
 // @ts-nocheck
 // src/app/(admin)/admin/reports/new/page.tsx
 import { redirect } from "next/navigation";
-import { createAdminClient, createServerSupabaseClient } from "@/lib/supabase/server";
+import { createAdminClient, createServerSupabaseClient, requireAdmin } from "@/lib/supabase/server";
 import SubmitButton from "@/components/ui/SubmitButton";
 
 async function createReport(formData: FormData) {
   "use server";
 
-  const supabase = createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Unauthorized");
+  const user = await requireAdmin();
 
   const admin = createAdminClient();
 

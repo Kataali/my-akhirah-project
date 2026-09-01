@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import toast from "react-hot-toast";
 import { Loader2 } from "lucide-react";
+import { safeRedirect } from "@/lib/auth";
 
 export default function LoginPage({
   searchParams,
@@ -19,7 +20,7 @@ export default function LoginPage({
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<"login" | "signup">("login");
 
-  const redirect = searchParams.redirect ?? "/dashboard";
+  const redirect = safeRedirect(searchParams.redirect);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -90,7 +91,14 @@ export default function LoginPage({
             </div>
 
             <div>
-              <label className="label">Password</label>
+              <div className="flex items-center justify-between gap-3">
+                <label className="label">Password</label>
+                {mode === "login" && (
+                  <Link href="/auth/forgot-password" className="text-xs text-earth-600 underline">
+                    Forgot password?
+                  </Link>
+                )}
+              </div>
               <input
                 type="password"
                 value={password}
