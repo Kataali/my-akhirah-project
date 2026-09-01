@@ -7,6 +7,9 @@ import { markCampaignFundedIfEligible } from "@/lib/campaign-status";
 
 export async function GET(req: NextRequest) {
   const reference = req.nextUrl.searchParams.get("reference");
+  // Debug: log incoming verify request URL and reference
+  console.log("[payments/verify] incoming url:", req.url);
+  console.log("[payments/verify] reference:", reference);
   if (!reference) {
     return NextResponse.redirect(new URL("/campaigns?payment=invalid", req.url));
   }
