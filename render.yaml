@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: my-akhirah-project
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        value: ""
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        value: ""
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        value: ""
+      - key: NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY
+        value: ""
+      - key: PAYSTACK_SECRET_KEY
+        value: ""
+      - key: RESEND_API_KEY
+        value: ""
+      - key: RESEND_FROM_EMAIL
+        value: ""
+      - key: NEXT_PUBLIC_APP_URL
+        value: ""
+      - key: NEXT_PUBLIC_APP_NAME
+        value: ""

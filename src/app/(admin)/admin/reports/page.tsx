@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
-import { Plus } from "lucide-react";
+import { Pencil, Plus } from "lucide-react";
 
 export default async function AdminReportsPage() {
   const supabase = createServerSupabaseClient();
@@ -54,7 +54,7 @@ export default async function AdminReportsPage() {
 
       {/* Existing reports */}
       <div>
-        <h2 className="font-semibold text-earth-700 mb-3 text-sm uppercase tracking-wide">Published reports</h2>
+        <h2 className="font-semibold text-earth-700 mb-3 text-sm uppercase tracking-wide">Reports</h2>
         <div className="card overflow-hidden">
           <table className="w-full text-sm">
             <thead>
@@ -63,6 +63,7 @@ export default async function AdminReportsPage() {
                 <th className="px-5 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">Campaign</th>
                 <th className="px-5 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">Status</th>
                 <th className="px-5 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">Date</th>
+                <th className="px-5 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-earth-50">
@@ -80,6 +81,11 @@ export default async function AdminReportsPage() {
                       </span>
                     </td>
                     <td className="px-5 py-4 text-earth-400 text-xs">{formatDate(report.created_at)}</td>
+                    <td className="px-5 py-4">
+                      <Link href={`/admin/reports/${report.id}/edit`} className="text-earth-600 hover:text-earth-800 inline-flex items-center gap-1 text-xs font-semibold">
+                        <Pencil size={13} /> Edit
+                      </Link>
+                    </td>
                   </tr>
                 );
               })}

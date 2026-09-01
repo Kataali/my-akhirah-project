@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { createAdminClient, createServerSupabaseClient, requireAdmin } from "@/lib/supabase/server";
 import SubmitButton from "@/components/ui/SubmitButton";
+import { parseDeliveredItems } from "@/lib/report-items";
 
 async function createReport(formData: FormData) {
   "use server";
@@ -26,12 +27,7 @@ async function createReport(formData: FormData) {
   const photosRaw = (formData.get("photos_urls") as string) ?? "";
   const photos_urls = photosRaw.split("\n").map((s) => s.trim()).filter(Boolean);
 
-  let items_delivered = [];
-  try {
-    items_delivered = JSON.parse(formData.get("items_delivered") as string || "[]");
-  } catch {
-    items_delivered = [];
-  }
+  const items_delivered = parseDeliveredItems((formData.get("items_delivered") as string) || "");
 
   const published = formData.get("published") === "true";
 
@@ -126,13 +122,14 @@ export default async function NewReportPage({
         </div>
 
         <div>
-          <label className="label">Items delivered (JSON)</label>
+          <label className="label">Items delivered</label>
           <textarea name="items_delivered" rows={4} className="input resize-none font-mono text-xs"
             defaultValue={JSON.stringify(
               campaign?.items_needed ?? [{ name: "Example item", quantity: 50, unit: "units" }],
               null, 2
             )}
           />
+          <p className="text-xs text-earth-400 mt-1">Use a simple list like [sugar, rice], or detailed JSON with quantities.</p>
         </div>
 
         <div>
