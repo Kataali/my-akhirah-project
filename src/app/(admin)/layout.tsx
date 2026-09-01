@@ -31,15 +31,15 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       {/* Sidebar */}
       <aside className="w-60 bg-earth-900 text-white flex flex-col shrink-0">
         <div className="px-5 py-5 border-b border-earth-700">
-          <div className="flex items-center justify-between">
-            <div>
+          <div>
+            <div className="flex items-center gap-3">
               <p className="font-display text-sm font-bold text-white">My Akhirah Project</p>
-              <p className="text-xs text-earth-400 mt-0.5">Admin Panel</p>
+              <Link href="/dashboard" className="flex items-center gap-2 text-xs text-earth-300 hover:text-earth-200">
+                <ChevronLeft size={14} />
+                <span className="mt-px">Dashboard</span>
+              </Link>
             </div>
-            <Link href="/dashboard" className="flex items-center gap-2 text-xs text-earth-300 hover:text-white">
-              <ChevronLeft size={14} />
-              <span>Dashboard</span>
-            </Link>
+            <p className="text-xs text-earth-400 mt-0.5">Admin Panel</p>
           </div>
         </div>
 
