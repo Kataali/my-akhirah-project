@@ -19,7 +19,8 @@ export async function GET(req: NextRequest) {
     console.error('[payments/verify] error reading headers', err);
   }
   if (!reference) {
-    return NextResponse.redirect(new URL("/campaigns?payment=invalid", req.url));
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+    return NextResponse.redirect(`${appUrl}/campaigns?payment=invalid`);
   }
 
   try {
@@ -33,7 +34,8 @@ export async function GET(req: NextRequest) {
         .from("contributions")
         .update({ status: "failed" })
         .eq("paystack_reference", reference);
-      return NextResponse.redirect(new URL("/dashboard?payment=failed", req.url));
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+      return NextResponse.redirect(`${appUrl}/dashboard?payment=failed`);
     }
 
     // Fetch existing contribution
@@ -44,7 +46,8 @@ export async function GET(req: NextRequest) {
       .single();
 
     if (!contribution) {
-      return NextResponse.redirect(new URL("/campaigns?payment=error", req.url));
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+      return NextResponse.redirect(`${appUrl}/campaigns?payment=error`);
     }
 
     // Mark as successful (trigger auto-updates raised_amount via DB trigger)
@@ -71,11 +74,13 @@ export async function GET(req: NextRequest) {
       });
     }
 
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
     return NextResponse.redirect(
-      new URL(`/dashboard?payment=success&campaign=${contribution.campaigns.slug}`, req.url)
+      `${appUrl}/dashboard?payment=success&campaign=${contribution.campaigns.slug}`
     );
   } catch (err) {
     console.error("[payments/verify]", err);
-    return NextResponse.redirect(new URL("/campaigns?payment=error", req.url));
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+    return NextResponse.redirect(`${appUrl}/campaigns?payment=error`);
   }
 }
