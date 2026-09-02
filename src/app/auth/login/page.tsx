@@ -62,6 +62,7 @@ export default function LoginPage({
         if (error) throw error;
         // switch to login mode so user can enter credentials
         setMode("login");
+        setEmail("");
         setPassword("");
         setConfirmPassword("");
         setShowPassword(false);
