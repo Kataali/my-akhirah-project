@@ -26,6 +26,7 @@ export async function initializeTransaction(params: {
   campaign_id: string;
   campaign_title: string;
   callback_url: string;
+  metadata?: Record<string, any>;
 }) {
   const amount_pesewas = Math.round(params.amount_ghs * 100);
 
@@ -41,6 +42,7 @@ export async function initializeTransaction(params: {
       metadata: {
         campaign_id: params.campaign_id,
         campaign_title: params.campaign_title,
+        ...(params.metadata || {}),
         custom_fields: [
           {
             display_name: "Campaign",
