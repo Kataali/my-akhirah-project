@@ -40,20 +40,10 @@ export async function POST(req: NextRequest) {
     // This will appear in Render logs after we push/deploy.
     console.log("[payments/initialize] callback_url:", callback_url);
 
-    // Create pending contribution record
-    if (user) {
-      await supabase.from("contributions").insert({
-        user_id: user.id,
-        campaign_id,
-        amount: amount_ghs,
-        currency: "GHS",
-        paystack_reference: reference,
-        status: "pending",
-        message: message || null,
-        anonymous: anonymous ?? false,
-      });
-    } else {
-      // guest flow: use admin client to bypass RLS and insert guest_email
+    // Create pending contribution record.
+    // Prefer guest insertion when guest_email is provided so authenticated users
+    // can opt into the guest/anonymous flow.
+    if (guest_email) {
       const admin = createAdminClient();
       await admin.from("contributions").insert({
         guest_email: guest_email,
@@ -65,6 +55,19 @@ export async function POST(req: NextRequest) {
         message: message || null,
         anonymous: anonymous ?? false,
       });
+    } else if (user) {
+      await supabase.from("contributions").insert({
+        user_id: user.id,
+        campaign_id,
+        amount: amount_ghs,
+        currency: "GHS",
+        paystack_reference: reference,
+        status: "pending",
+        message: message || null,
+        anonymous: anonymous ?? false,
+      });
+    } else {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Initialize Paystack transaction

@@ -78,7 +78,14 @@ export default function InvestPage({ params }: { params: { slug: string } }) {
       };
 
       if (!user) {
+        // guest (visitor) flow: use provided guest inputs
         payload.guest_email = guestEmail;
+        if (guestName) payload.guest_name = guestName;
+      } else if (user && anonymous) {
+        // logged-in user wants to donate anonymously — use guest flow but
+        // reuse the logged-in user's email so we can still send a receipt.
+        payload.guest_email = user.email;
+        // do not attach user_id so the contribution remains anonymous/publicly guest
         if (guestName) payload.guest_name = guestName;
       }
 
