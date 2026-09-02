@@ -1,10 +1,27 @@
 // src/lib/email.ts
 import { Resend } from "resend";
+import sgMail from "@sendgrid/mail";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM = process.env.RESEND_FROM_EMAIL!;
 const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME!;
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL!;
+
+const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
+const SENDGRID_FROM = process.env.SENDGRID_FROM_EMAIL;
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const RESEND_FROM = process.env.RESEND_FROM_EMAIL;
+
+let useSendGrid = false;
+if (SENDGRID_API_KEY && SENDGRID_FROM) {
+  sgMail.setApiKey(SENDGRID_API_KEY);
+  useSendGrid = true;
+}
+
+let resend: Resend | null = null;
+if (!useSendGrid && RESEND_API_KEY && RESEND_FROM) {
+  resend = new Resend(RESEND_API_KEY);
+}
+
+const FROM = useSendGrid ? SENDGRID_FROM : RESEND_FROM!;
 
 // ─────────────────────────────────────────────
 // Donation receipt email
@@ -18,15 +35,10 @@ export async function sendDonationReceipt(params: {
   reference: string;
 }) {
   const { to, investor_name, amount_ghs, campaign_title, campaign_slug, reference } = params;
-
-  await resend.emails.send({
-    from: `${APP_NAME} <${FROM}>`,
-    to,
-    subject: `Your contribution to "${campaign_title}" was received 🙏`,
-    html: `
+  const html = `
       <div style="font-family: Georgia, serif; max-width: 560px; margin: 0 auto; color: #2d2416;">
         <div style="background: #c97520; padding: 32px; border-radius: 8px 8px 0 0;">
-          <h1 style="color: #fff; margin: 0; font-size: 24px;">My Akhirah Project</h1>
+          <h1 style="color: #fff; margin: 0; font-size: 24px;">${APP_NAME}</h1>
         </div>
         <div style="background: #fdf6ee; padding: 32px; border-radius: 0 0 8px 8px;">
           <p style="font-size: 18px;">Assalamu alaikum, ${investor_name},</p>
@@ -50,8 +62,29 @@ export async function sendDonationReceipt(params: {
           </p>
         </div>
       </div>
-    `,
-  });
+    `;
+
+  if (useSendGrid) {
+    await sgMail.send({
+      to,
+      from: `${APP_NAME} <${FROM}>`,
+      subject: `Your contribution to "${campaign_title}" was received 🙏`,
+      html,
+    });
+    return;
+  }
+
+  if (resend) {
+    await resend.emails.send({
+      from: `${APP_NAME} <${FROM}>`,
+      to,
+      subject: `Your contribution to "${campaign_title}" was received 🙏`,
+      html,
+    });
+    return;
+  }
+
+  console.warn("No email provider configured: set SENDGRID_API_KEY or RESEND_API_KEY to send emails");
 }
 
 // ─────────────────────────────────────────────
@@ -64,17 +97,23 @@ export async function sendCampaignFundedNotification(params: {
   total_raised: number;
 }) {
   const { admin_email, campaign_title, campaign_id, total_raised } = params;
-
-  await resend.emails.send({
-    from: `${APP_NAME} <${FROM}>`,
-    to: admin_email,
-    subject: `🎉 Campaign fully funded: ${campaign_title}`,
-    html: `
+  const html = `
       <p>The campaign <strong>${campaign_title}</strong> has reached its fundraising goal!</p>
       <p>Total raised: <strong>GHS ${total_raised.toFixed(2)}</strong></p>
       <p><a href="${APP_URL}/admin/campaigns/${campaign_id}">Manage campaign →</a></p>
-    `,
-  });
+    `;
+
+  if (useSendGrid) {
+    await sgMail.send({ to: admin_email, from: `${APP_NAME} <${FROM}>`, subject: `🎉 Campaign fully funded: ${campaign_title}`, html });
+    return;
+  }
+
+  if (resend) {
+    await resend.emails.send({ from: `${APP_NAME} <${FROM}>`, to: admin_email, subject: `🎉 Campaign fully funded: ${campaign_title}`, html });
+    return;
+  }
+
+  console.warn("No email provider configured: set SENDGRID_API_KEY or RESEND_API_KEY to send emails");
 }
 
 // ─────────────────────────────────────────────
@@ -88,12 +127,7 @@ export async function sendImpactReportNotification(params: {
   report_summary: string;
 }) {
   const { to, investor_name, campaign_title, campaign_slug, report_summary } = params;
-
-  await resend.emails.send({
-    from: `${APP_NAME} <${FROM}>`,
-    to,
-    subject: `See the impact of your contribution to "${campaign_title}" 🌟`,
-    html: `
+  const html = `
       <div style="font-family: Georgia, serif; max-width: 560px; margin: 0 auto;">
         <p>Assalamu alaikum, ${investor_name},</p>
         <p>Thanks to contributors like you, the <strong>${campaign_title}</strong> campaign has been completed. Here is a summary of the impact:</p>
@@ -102,6 +136,17 @@ export async function sendImpactReportNotification(params: {
         </blockquote>
         <a href="${APP_URL}/campaigns/${campaign_slug}" style="color: #c97520;">See the full report with photos →</a>
       </div>
-    `,
-  });
+    `;
+
+  if (useSendGrid) {
+    await sgMail.send({ to, from: `${APP_NAME} <${FROM}>`, subject: `See the impact of your contribution to "${campaign_title}" 🌟`, html });
+    return;
+  }
+
+  if (resend) {
+    await resend.emails.send({ from: `${APP_NAME} <${FROM}>`, to, subject: `See the impact of your contribution to "${campaign_title}" 🌟`, html });
+    return;
+  }
+
+  console.warn("No email provider configured: set SENDGRID_API_KEY or RESEND_API_KEY to send emails");
 }
