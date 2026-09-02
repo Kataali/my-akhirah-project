@@ -82,7 +82,7 @@ export async function GET(req: NextRequest) {
     // Fallback for delayed or missed payment webhooks.
     await markCampaignFundedIfEligible(contribution.campaign_id);
 
-    // Send receipt email
+    // Send receipt email to profile email or guest email
     if (contribution.profiles?.email) {
       await sendDonationReceipt({
         to: contribution.profiles.email,
@@ -92,11 +92,26 @@ export async function GET(req: NextRequest) {
         campaign_slug: contribution.campaigns.slug,
         reference,
       });
+    } else if (contribution.guest_email) {
+      await sendDonationReceipt({
+        to: contribution.guest_email,
+        investor_name: "Friend",
+        amount_ghs: contribution.amount,
+        campaign_title: contribution.campaigns.title,
+        campaign_slug: contribution.campaigns.slug,
+        reference,
+      });
     }
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+    if (contribution.user_id) {
+      return NextResponse.redirect(
+        `${appUrl}/dashboard?payment=success&campaign=${contribution.campaigns.slug}`
+      );
+    }
+
     return NextResponse.redirect(
-      `${appUrl}/dashboard?payment=success&campaign=${contribution.campaigns.slug}`
+      `${appUrl}/campaigns/${contribution.campaigns.slug}?payment=success`
     );
   } catch (err) {
     console.error("[payments/verify]", err);

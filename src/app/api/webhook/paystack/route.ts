@@ -56,6 +56,15 @@ export async function POST(req: NextRequest) {
           campaign_slug: contribution.campaigns?.slug ?? "",
           reference,
         });
+      } else if (contribution?.guest_email) {
+        await sendDonationReceipt({
+          to: contribution.guest_email,
+          investor_name: "Friend",
+          amount_ghs: contribution.amount,
+          campaign_title: contribution.campaigns?.title ?? "",
+          campaign_slug: contribution.campaigns?.slug ?? "",
+          reference,
+        });
       }
     } catch (err) {
       console.error("[webhook/paystack] sendDonationReceipt error:", err);

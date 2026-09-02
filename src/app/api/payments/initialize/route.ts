@@ -1,6 +1,6 @@
 // src/app/api/payments/initialize/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase/server";
 import { initializeTransaction, generateReference } from "@/lib/paystack";
 
 export async function POST(req: NextRequest) {
@@ -8,12 +8,15 @@ export async function POST(req: NextRequest) {
     const supabase = createServerSupabaseClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) {
+    const body = await req.json();
+    // allow guest donations when `guest_email` provided
+    const { campaign_id, campaign_slug, amount_ghs, message, anonymous, guest_email, guest_name } = body;
+
+    if (!user && !guest_email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await req.json();
-    const { campaign_id, campaign_slug, amount_ghs, message, anonymous } = body;
+    // body parsed above
 
     if (!campaign_id || !amount_ghs || amount_ghs < 5) {
       return NextResponse.json({ error: "Invalid request" }, { status: 400 });
@@ -31,32 +34,48 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Campaign not found or not active" }, { status: 404 });
     }
 
-    const reference = generateReference(user.id);
+    const reference = generateReference(user ? user.id : "");
     const callback_url = `${process.env.NEXT_PUBLIC_APP_URL}/api/payments/verify?reference=${reference}`;
     // Temporary debug log: record which callback URL is being sent to Paystack
     // This will appear in Render logs after we push/deploy.
     console.log("[payments/initialize] callback_url:", callback_url);
 
     // Create pending contribution record
-    await supabase.from("contributions").insert({
-      user_id: user.id,
-      campaign_id,
-      amount: amount_ghs,
-      currency: "GHS",
-      paystack_reference: reference,
-      status: "pending",
-      message: message || null,
-      anonymous: anonymous ?? false,
-    });
+    if (user) {
+      await supabase.from("contributions").insert({
+        user_id: user.id,
+        campaign_id,
+        amount: amount_ghs,
+        currency: "GHS",
+        paystack_reference: reference,
+        status: "pending",
+        message: message || null,
+        anonymous: anonymous ?? false,
+      });
+    } else {
+      // guest flow: use admin client to bypass RLS and insert guest_email
+      const admin = createAdminClient();
+      await admin.from("contributions").insert({
+        guest_email: guest_email,
+        campaign_id,
+        amount: amount_ghs,
+        currency: "GHS",
+        paystack_reference: reference,
+        status: "pending",
+        message: message || null,
+        anonymous: anonymous ?? false,
+      });
+    }
 
     // Initialize Paystack transaction
     const transaction = await initializeTransaction({
-      email: user.email!,
+      email: user ? user.email! : guest_email,
       amount_ghs,
       reference,
       campaign_id,
       campaign_title: campaign.title,
       callback_url,
+      metadata: { guest_name: guest_name ?? null },
     });
 
     // Debug: log Paystack transaction fields returned to the client

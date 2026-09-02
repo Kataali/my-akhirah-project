@@ -97,7 +97,8 @@ create trigger campaigns_updated_at
 -- ────────────────────────────────────────────────────────────
 create table public.contributions (
   id                      uuid primary key default uuid_generate_v4(),
-  user_id                 uuid not null references public.profiles(id),
+  user_id                 uuid references public.profiles(id),
+  guest_email             text,
   campaign_id             uuid not null references public.campaigns(id),
   amount                  numeric(12, 2) not null,
   currency                currency not null default 'GHS',
