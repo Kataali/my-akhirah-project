@@ -1,8 +1,9 @@
 "use client";
 // src/app/auth/login/page.tsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import toast from "react-hot-toast";
 import { Loader2, Eye, EyeOff } from "lucide-react";
@@ -24,6 +25,23 @@ export default function LoginPage({
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const redirect = safeRedirect(searchParams.redirect);
+  const searchParamsHook = useSearchParams();
+
+  useEffect(() => {
+    // If URL contains ?signup=success, switch to login mode so user can sign in
+    try {
+      const s = searchParamsHook?.get("signup");
+      const m = searchParamsHook?.get("mode");
+      if (s === "success") {
+        setMode("login");
+        toast.success("Account created — please sign in with your credentials");
+      } else if (m === "signup" || m === "login") {
+        setMode(m as "login" | "signup");
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, [searchParamsHook]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -42,9 +60,14 @@ export default function LoginPage({
           options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
         });
         if (error) throw error;
-        toast.success("Account created — please sign in with your credentials");
+        // switch to login mode so user can enter credentials
+        setMode("login");
+        setPassword("");
+        setConfirmPassword("");
+        setShowPassword(false);
+        setShowConfirmPassword(false);
         setLoading(false);
-        router.push("/auth/login?signup=success");
+        toast.success("Account created — please sign in with your credentials");
         return;
       }
 
