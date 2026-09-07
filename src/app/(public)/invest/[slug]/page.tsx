@@ -28,7 +28,6 @@ export default function InvestPage({ params }: { params: { slug: string } }) {
   const [user, setUser] = useState<{ id: string; email: string } | null>(null);
   const [amount, setAmount] = useState<string>("");
   const [message, setMessage] = useState("");
-  const [anonymous, setAnonymous] = useState(false);
   const [loading, setLoading] = useState(false);
   const [guestEmail, setGuestEmail] = useState("");
   const [guestName, setGuestName] = useState("");
@@ -74,18 +73,11 @@ export default function InvestPage({ params }: { params: { slug: string } }) {
         campaign_slug: campaign!.slug,
         amount_ghs: amt,
         message,
-        anonymous,
       };
 
       if (!user) {
         // guest (visitor) flow: use provided guest inputs
         payload.guest_email = guestEmail;
-        if (guestName) payload.guest_name = guestName;
-      } else if (user && anonymous) {
-        // logged-in user wants to donate anonymously — use guest flow but
-        // reuse the logged-in user's email so we can still send a receipt.
-        payload.guest_email = user.email;
-        // do not attach user_id so the contribution remains anonymous/publicly guest
         if (guestName) payload.guest_name = guestName;
       }
 
@@ -150,7 +142,7 @@ export default function InvestPage({ params }: { params: { slug: string } }) {
             </div>
             <div className="mt-4 space-y-3">
               <p className="text-sm text-earth-600">
-                Or continue as guest — we'll email a receipt to you.
+                Or continue as guest — we'll email a receipt to you. Leave name blank if you prefer to stay anonymous.
               </p>
               <div>
                 <label className="label">Your name (optional)</label>
@@ -219,19 +211,6 @@ export default function InvestPage({ params }: { params: { slug: string } }) {
               className="input resize-none"
             />
           </div>
-
-          {/* Anonymous */}
-          <label className="flex items-center gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={anonymous}
-              onChange={(e) => setAnonymous(e.target.checked)}
-              className="rounded border-earth-300 text-earth-500 focus:ring-earth-300"
-            />
-            <span className="text-sm text-earth-600">
-              Contribute anonymously
-            </span>
-          </label>
 
           <button
             type="submit"

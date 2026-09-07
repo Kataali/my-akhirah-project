@@ -52,7 +52,8 @@ export interface CampaignRow {
 
 export interface ContributionRow {
   id: string;
-  user_id: string;
+  user_id: string | null;
+  guest_email: string | null;
   campaign_id: string;
   amount: number;
   currency: "GHS" | "USD";
@@ -179,7 +180,8 @@ export type Database = {
       contributions: {
         Row: {
           id: string;
-          user_id: string;
+          user_id: string | null;
+          guest_email: string | null;
           campaign_id: string;
           amount: number;
           currency: "GHS" | "USD";
@@ -191,7 +193,8 @@ export type Database = {
           created_at: string;
         };
         Insert: {
-          user_id: string;
+          user_id?: string | null;
+          guest_email?: string | null;
           campaign_id: string;
           amount: number;
           currency?: "GHS" | "USD";
@@ -202,7 +205,8 @@ export type Database = {
           anonymous?: boolean;
         };
         Update: {
-          user_id?: string;
+          user_id?: string | null;
+          guest_email?: string | null;
           campaign_id?: string;
           amount?: number;
           currency?: "GHS" | "USD";

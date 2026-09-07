@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     // allow guest donations when `guest_email` provided
-    const { campaign_id, campaign_slug, amount_ghs, message, anonymous, guest_email, guest_name } = body;
+    const { campaign_id, campaign_slug, amount_ghs, message, guest_email, guest_name } = body;
 
     if (!user && !guest_email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -45,6 +45,7 @@ export async function POST(req: NextRequest) {
     // can opt into the guest/anonymous flow.
     if (guest_email) {
       const admin = createAdminClient();
+      const isAnonymousGuest = !String(guest_name ?? "").trim();
       await admin.from("contributions").insert({
         guest_email: guest_email,
         campaign_id,
@@ -53,7 +54,7 @@ export async function POST(req: NextRequest) {
         paystack_reference: reference,
         status: "pending",
         message: message || null,
-        anonymous: anonymous ?? false,
+        anonymous: isAnonymousGuest,
       });
     } else if (user) {
       await supabase.from("contributions").insert({
@@ -64,7 +65,7 @@ export async function POST(req: NextRequest) {
         paystack_reference: reference,
         status: "pending",
         message: message || null,
-        anonymous: anonymous ?? false,
+        anonymous: false,
       });
     } else {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
