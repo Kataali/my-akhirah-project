@@ -22,38 +22,51 @@ async function updateReport(formData: FormData) {
     throw new Error("Published reports cannot be reverted to draft.");
   }
 
-  const { data: campaign, error: campaignError } = await admin
-    .from("campaigns")
-    .select("status")
-    .eq("id", existing.campaign_id)
-    .single();
-
-  if (campaignError || !campaign || !["funded", "completed"].includes(campaign.status)) {
-    throw new Error("Impact reports can only be published for funded campaigns.");
+  let campaign = null;
+  if (existing.campaign_id) {
+    const c = await admin
+      .from("campaigns")
+      .select("status")
+      .eq("id", existing.campaign_id)
+      .single();
+    campaign = c.data;
+    if (
+      c.error ||
+      !campaign ||
+      !["funded", "completed"].includes(campaign.status)
+    ) {
+      throw new Error(
+        "Impact reports can only be published for funded campaigns.",
+      );
+    }
   }
 
   const photosUrls = ((formData.get("photos_urls") as string) ?? "")
-    .split("\n")
+    .split(/[,\n]+/)
     .map((url) => url.trim())
     .filter(Boolean);
+
+  const event_date = (formData.get("event_date") as string) || null;
 
   const itemsDelivered = parseDeliveredItems((formData.get("items_delivered") as string) || "");
 
   const { error } = await admin
     .from("impact_reports")
     .update({
+      event_date: event_date || undefined,
       title: formData.get("title") as string,
       summary: formData.get("summary") as string,
       photos_urls: photosUrls,
       items_delivered: itemsDelivered,
-      beneficiaries_reached: parseInt(formData.get("beneficiaries_reached") as string, 10) || 0,
+      beneficiaries_reached:
+        parseInt(formData.get("beneficiaries_reached") as string, 10) || 0,
       published: requestedPublished,
     })
     .eq("id", reportId);
 
   if (error) throw new Error(error.message);
 
-  if (requestedPublished) {
+  if (requestedPublished && existing.campaign_id) {
     await admin
       .from("campaigns")
       .update({ status: "completed" })
@@ -75,52 +88,110 @@ export default async function EditReportPage({ params }: { params: { id: string 
   if (error || !report) redirect("/admin/reports");
 
   const campaign = report.campaigns as { title: string } | null;
+  const displayCampaignTitle = campaign?.title ?? report.campaign_title ?? "";
 
   return (
     <div className="max-w-2xl">
       <div className="mb-8">
-        <h1 className="font-display text-2xl font-bold text-earth-900">Edit Impact Report</h1>
-        <p className="text-earth-500 text-sm mt-1">{campaign?.title ?? "Campaign report"}</p>
+        <h1 className="font-display text-2xl font-bold text-earth-900">
+          Edit Impact Report
+        </h1>
+        <p className="text-earth-500 text-sm mt-1">
+          {displayCampaignTitle || "Campaign report"}
+        </p>
       </div>
 
       <form action={updateReport} className="card p-7 space-y-5">
         <input type="hidden" name="id" value={report.id} />
         <div>
+          <label className="label">Event date *</label>
+          <input
+            name="event_date"
+            type="date"
+            required
+            className="input"
+            defaultValue={(report.event_date ?? report.created_at).slice(0, 10)}
+          />
+        </div>
+        <div>
           <label className="label">Report title *</label>
-          <input name="title" required defaultValue={report.title} className="input" />
+          <input
+            name="title"
+            required
+            defaultValue={report.title}
+            className="input"
+          />
         </div>
         <div>
           <label className="label">Summary *</label>
-          <textarea name="summary" required rows={5} defaultValue={report.summary} className="input resize-none" />
+          <textarea
+            name="summary"
+            required
+            rows={5}
+            defaultValue={report.summary}
+            className="input resize-none"
+          />
         </div>
         <div>
           <label className="label">Beneficiaries reached *</label>
-          <input name="beneficiaries_reached" type="number" min="0" required defaultValue={report.beneficiaries_reached} className="input" />
+          <input
+            name="beneficiaries_reached"
+            type="number"
+            min="0"
+            required
+            defaultValue={report.beneficiaries_reached}
+            className="input"
+          />
         </div>
         <div>
           <label className="label">Photo URLs (one per line)</label>
-          <textarea name="photos_urls" rows={4} defaultValue={report.photos_urls.join("\n")} className="input resize-none font-mono text-xs" />
+          <textarea
+            name="photos_urls"
+            rows={4}
+            defaultValue={report.photos_urls.join("\n")}
+            className="input resize-none font-mono text-xs"
+          />
         </div>
         <div>
           <label className="label">Items delivered</label>
-          <textarea name="items_delivered" rows={4} defaultValue={JSON.stringify(report.items_delivered, null, 2)} className="input resize-none font-mono text-xs" />
-          <p className="text-xs text-earth-400 mt-1">Use a simple list like [sugar, rice], or detailed JSON with quantities.</p>
+          <textarea
+            name="items_delivered"
+            rows={4}
+            defaultValue={JSON.stringify(report.items_delivered, null, 2)}
+            className="input resize-none font-mono text-xs"
+          />
+          <p className="text-xs text-earth-400 mt-1">
+            Use a simple list like [sugar, rice], or detailed JSON with
+            quantities.
+          </p>
         </div>
         <div>
           <label className="label">Status</label>
-          <select name="published" className="input" defaultValue={String(report.published)}>
+          <select
+            name="published"
+            className="input"
+            defaultValue={String(report.published)}
+          >
             {!report.published && <option value="false">Draft</option>}
             <option value="true">Published</option>
           </select>
           {report.published ? (
-            <p className="text-xs text-earth-400 mt-1">Published reports remain published.</p>
+            <p className="text-xs text-earth-400 mt-1">
+              Published reports remain published.
+            </p>
           ) : (
-            <p className="text-xs text-earth-400 mt-1">Publishing this report will mark its campaign as completed.</p>
+            <p className="text-xs text-earth-400 mt-1">
+              Publishing this report will mark its campaign as completed.
+            </p>
           )}
         </div>
         <div className="flex justify-end gap-3 pt-2">
-          <a href="/admin/reports" className="btn-secondary">Cancel</a>
-          <SubmitButton loadingText="Saving report...">Save report</SubmitButton>
+          <a href="/admin/reports" className="btn-secondary">
+            Cancel
+          </a>
+          <SubmitButton loadingText="Saving report...">
+            Save report
+          </SubmitButton>
         </div>
       </form>
     </div>

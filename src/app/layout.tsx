@@ -19,20 +19,38 @@ const sourceSerif = Source_Serif_4({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+  ),
   title: {
     default: "My Akhirah Project",
     template: "%s | My Akhirah Project",
   },
   description:
     "Connecting investors with communities in Northern Ghana. Every contribution delivers essential items to those who need them most.",
-  keywords: ["charity", "Ghana", "northern Ghana", "donation", "Islamic charity", "akhirah", "sadaqah"],
+  keywords: [
+    "charity",
+    "Ghana",
+    "northern Ghana",
+    "donation",
+    "Islamic charity",
+    "akhirah",
+    "sadaqah",
+  ],
+  icons: {
+    icon: "/images/logo.jpg",
+    shortcut: "/images/logo.jpg",
+    apple: "/images/logo.jpg",
+  },
   openGraph: {
     type: "website",
     locale: "en_GH",
     url: "https://myakhirahproject.org",
     siteName: "My Akhirah Project",
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630 }],
+    images: [
+      { url: "/og-image.jpg", width: 1200, height: 630 },
+      { url: "/images/logo.jpg", width: 1200, height: 630 },
+    ],
   },
 };
 

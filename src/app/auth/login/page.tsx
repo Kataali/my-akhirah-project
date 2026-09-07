@@ -2,6 +2,7 @@
 // src/app/auth/login/page.tsx
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -57,7 +58,9 @@ export default function LoginPage({
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
+          },
         });
         if (error) throw error;
         // switch to login mode so user can enter credentials
@@ -72,7 +75,10 @@ export default function LoginPage({
         return;
       }
 
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
       if (error) throw error;
       router.push(redirect);
       router.refresh();
@@ -86,11 +92,22 @@ export default function LoginPage({
     <div className="min-h-screen bg-earth-900 flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <Link href="/" className="font-display text-2xl font-bold text-white">
-            My Akhirah Project
+          <Link href="/" className="inline-flex items-center gap-3">
+            <Image
+              src="/images/logo.jpg"
+              alt="My Akhirah Project"
+              width={40}
+              height={40}
+              className="rounded-sm"
+            />
+            <span className="font-display text-2xl font-bold text-white">
+              My Akhirah Project
+            </span>
           </Link>
           <p className="text-earth-300 text-sm mt-2">
-            {mode === "login" ? "Welcome back" : "Join us and start investing in the hereafter"}
+            {mode === "login"
+              ? "Welcome back"
+              : "Join us and start investing in the hereafter"}
           </p>
         </div>
 
@@ -102,7 +119,9 @@ export default function LoginPage({
                 key={m}
                 onClick={() => setMode(m)}
                 className={`flex-1 py-2 text-sm font-medium transition-colors capitalize ${
-                  mode === m ? "bg-earth-500 text-white" : "text-earth-500 hover:bg-earth-50"
+                  mode === m
+                    ? "bg-earth-500 text-white"
+                    : "text-earth-500 hover:bg-earth-50"
                 }`}
               >
                 {m === "login" ? "Sign in" : "Sign up"}
@@ -127,7 +146,10 @@ export default function LoginPage({
               <div className="flex items-center justify-between gap-3">
                 <label className="label">Password</label>
                 {mode === "login" && (
-                  <Link href="/auth/forgot-password" className="text-xs text-earth-600 underline">
+                  <Link
+                    href="/auth/forgot-password"
+                    className="text-xs text-earth-600 underline"
+                  >
                     Forgot password?
                   </Link>
                 )}
@@ -170,21 +192,36 @@ export default function LoginPage({
                     onClick={() => setShowConfirmPassword((s) => !s)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-earth-400"
                   >
-                    {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    {showConfirmPassword ? (
+                      <EyeOff size={16} />
+                    ) : (
+                      <Eye size={16} />
+                    )}
                   </button>
                 </div>
               </div>
             )}
 
-            <button type="submit" disabled={loading} className="btn-primary w-full flex items-center justify-center gap-2 py-2.5 mt-2">
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary w-full flex items-center justify-center gap-2 py-2.5 mt-2"
+            >
               {loading && <Loader2 className="animate-spin" size={18} />}
-              {loading ? "Please wait…" : mode === "login" ? "Sign in" : "Create account"}
+              {loading
+                ? "Please wait…"
+                : mode === "login"
+                  ? "Sign in"
+                  : "Create account"}
             </button>
           </form>
 
           <p className="text-center text-xs text-earth-400 mt-5">
             By continuing, you agree to our{" "}
-            <Link href="/privacy" className="underline">Privacy Policy</Link>.
+            <Link href="/privacy" className="underline">
+              Privacy Policy
+            </Link>
+            .
           </p>
         </div>
       </div>

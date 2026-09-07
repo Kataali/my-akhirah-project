@@ -32,48 +32,87 @@ export default async function ImpactPage() {
       {reports && reports.length > 0 ? (
         <div className="space-y-16">
           {reports.map((report) => {
-            const campaign = report.campaigns as { title: string; location: string; slug: string };
+            const campaign = report.campaigns as {
+              title: string;
+              location: string;
+              slug: string;
+            } | null;
+            const campaignTitle =
+              campaign?.title ?? report.campaign_title ?? "";
+            const campaignLocation = campaign?.location ?? "";
             return (
-              <div key={report.id} className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+              <div
+                key={report.id}
+                className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start"
+              >
                 {/* Photos */}
                 {report.photos_urls?.length > 0 && (
                   <div className="grid grid-cols-2 gap-3">
-                    {report.photos_urls.slice(0, 4).map((url: string, i: number) => (
-                      <div key={i} className={`relative rounded-xl overflow-hidden bg-earth-100 ${i === 0 ? "col-span-2 h-56" : "h-36"}`}>
-                        <Image src={url} alt={`Impact photo ${i + 1}`} fill className="object-cover" />
-                      </div>
-                    ))}
+                    {report.photos_urls
+                      .slice(0, 4)
+                      .map((url: string, i: number) => (
+                        <div
+                          key={i}
+                          className={`relative rounded-xl overflow-hidden bg-earth-100 ${i === 0 ? "col-span-2 h-56" : "h-36"}`}
+                        >
+                          <Image
+                            src={url}
+                            alt={`Impact photo ${i + 1}`}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      ))}
                   </div>
                 )}
 
                 {/* Content */}
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-widest text-earth-400 mb-2">
-                    {campaign.location}
+                    {campaignLocation}
                   </p>
-                  <h2 className="font-display text-2xl font-bold text-earth-900 mb-1">{report.title}</h2>
+                  <h2 className="font-display text-2xl font-bold text-earth-900 mb-1">
+                    {report.title}
+                  </h2>
                   <p className="text-sm text-earth-400 mb-4">
-                    {campaign.title} · {formatDate(report.created_at)}
+                    {campaignTitle} · {formatDate(report.created_at)}
                   </p>
-                  <p className="text-earth-600 leading-relaxed mb-5">{report.summary}</p>
+                  <p className="text-earth-600 leading-relaxed mb-5">
+                    {report.summary}
+                  </p>
 
                   {/* Delivered items */}
                   {report.items_delivered?.length > 0 && (
                     <div>
-                      <p className="text-xs font-semibold text-earth-500 uppercase tracking-wide mb-2">Items delivered</p>
+                      <p className="text-xs font-semibold text-earth-500 uppercase tracking-wide mb-2">
+                        Items delivered
+                      </p>
                       <ul className="space-y-1">
-                        {report.items_delivered.map((item: { name: string; quantity: number; unit: string }, i: number) => (
-                          <li key={i} className="text-sm text-earth-600 flex gap-2">
-                            <span className="text-earth-300">·</span>
-                            {item.quantity} {item.unit} of {item.name}
-                          </li>
-                        ))}
+                        {report.items_delivered.map(
+                          (
+                            item: {
+                              name: string;
+                              quantity: number;
+                              unit: string;
+                            },
+                            i: number,
+                          ) => (
+                            <li
+                              key={i}
+                              className="text-sm text-earth-600 flex gap-2"
+                            >
+                              <span className="text-earth-300">·</span>
+                              {item.quantity} {item.unit} of {item.name}
+                            </li>
+                          ),
+                        )}
                       </ul>
                     </div>
                   )}
 
                   <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-forest-50 border border-forest-200 px-4 py-2 text-sm text-forest-700 font-medium">
-                    <span>👥</span> {report.beneficiaries_reached} beneficiaries reached
+                    <span>👥</span> {report.beneficiaries_reached} beneficiaries
+                    reached
                   </div>
                 </div>
               </div>

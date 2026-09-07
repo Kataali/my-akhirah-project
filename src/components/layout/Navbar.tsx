@@ -1,6 +1,7 @@
 "use client";
 // src/components/layout/Navbar.tsx
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { Loader2, Menu, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -12,7 +13,11 @@ const NAV_LINKS = [
   { href: "/about", label: "About" },
 ];
 
-export default function Navbar({ user }: { user?: { email: string; role?: string } | null }) {
+export default function Navbar({
+  user,
+}: {
+  user?: { email: string; role?: string } | null;
+}) {
   const [open, setOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const router = useRouter();
@@ -33,7 +38,14 @@ export default function Navbar({ user }: { user?: { email: string; role?: string
     <header className="sticky top-0 z-50 w-full border-b border-earth-200/60 bg-sand-50/90 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-8">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-3">
+          <Image
+            src="/images/logo.jpg"
+            alt="My Akhirah Project"
+            width={36}
+            height={36}
+            className="rounded-sm"
+          />
           <span className="font-display text-xl font-bold text-earth-700">
             My Akhirah Project
           </span>
@@ -42,7 +54,11 @@ export default function Navbar({ user }: { user?: { email: string; role?: string
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-1">
           {NAV_LINKS.map((l) => (
-            <Link key={l.href} href={l.href} className="btn-ghost text-earth-700">
+            <Link
+              key={l.href}
+              href={l.href}
+              className="btn-ghost text-earth-700"
+            >
               {l.label}
             </Link>
           ))}
@@ -53,18 +69,30 @@ export default function Navbar({ user }: { user?: { email: string; role?: string
           {user ? (
             <>
               {user.role === "admin" && (
-                <Link href="/admin" className="btn-ghost text-xs">Admin Panel</Link>
+                <Link href="/admin" className="btn-ghost text-xs">
+                  Admin Panel
+                </Link>
               )}
-              <Link href="/dashboard" className="btn-ghost">Dashboard</Link>
-              <button onClick={handleSignOut} disabled={signingOut} className="btn-secondary text-sm">
+              <Link href="/dashboard" className="btn-ghost">
+                Dashboard
+              </Link>
+              <button
+                onClick={handleSignOut}
+                disabled={signingOut}
+                className="btn-secondary text-sm"
+              >
                 {signingOut && <Loader2 className="animate-spin" size={16} />}
                 {signingOut ? "Signing out..." : "Sign out"}
               </button>
             </>
           ) : (
             <>
-              <Link href="/auth/login" className="btn-ghost">Sign in</Link>
-              <Link href="/campaigns" className="btn-primary">Invest Now</Link>
+              <Link href="/auth/login" className="btn-ghost">
+                Sign in
+              </Link>
+              <Link href="/campaigns" className="btn-primary">
+                Invest Now
+              </Link>
             </>
           )}
         </div>
@@ -79,23 +107,50 @@ export default function Navbar({ user }: { user?: { email: string; role?: string
       {open && (
         <div className="md:hidden border-t border-earth-100 bg-sand-50 px-4 py-4 space-y-2">
           {NAV_LINKS.map((l) => (
-            <Link key={l.href} href={l.href} className="block py-2 text-earth-700" onClick={() => setOpen(false)}>
+            <Link
+              key={l.href}
+              href={l.href}
+              className="block py-2 text-earth-700"
+              onClick={() => setOpen(false)}
+            >
               {l.label}
             </Link>
           ))}
           <div className="pt-2 border-t border-earth-100 flex flex-col gap-2">
             {user ? (
               <>
-                <Link href="/dashboard" className="btn-secondary w-full text-center" onClick={() => setOpen(false)}>Dashboard</Link>
-                <button onClick={handleSignOut} disabled={signingOut} className="btn-ghost w-full">
+                <Link
+                  href="/dashboard"
+                  className="btn-secondary w-full text-center"
+                  onClick={() => setOpen(false)}
+                >
+                  Dashboard
+                </Link>
+                <button
+                  onClick={handleSignOut}
+                  disabled={signingOut}
+                  className="btn-ghost w-full"
+                >
                   {signingOut && <Loader2 className="animate-spin" size={16} />}
                   {signingOut ? "Signing out..." : "Sign out"}
                 </button>
               </>
             ) : (
               <>
-                <Link href="/auth/login" className="btn-secondary w-full text-center" onClick={() => setOpen(false)}>Sign in</Link>
-                <Link href="/campaigns" className="btn-primary w-full text-center" onClick={() => setOpen(false)}>Invest Now</Link>
+                <Link
+                  href="/auth/login"
+                  className="btn-secondary w-full text-center"
+                  onClick={() => setOpen(false)}
+                >
+                  Sign in
+                </Link>
+                <Link
+                  href="/campaigns"
+                  className="btn-primary w-full text-center"
+                  onClick={() => setOpen(false)}
+                >
+                  Invest Now
+                </Link>
               </>
             )}
           </div>

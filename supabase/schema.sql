@@ -136,12 +136,14 @@ create trigger on_contribution_success
 -- ────────────────────────────────────────────────────────────
 create table public.impact_reports (
   id                    uuid primary key default uuid_generate_v4(),
-  campaign_id           uuid not null references public.campaigns(id),
+  campaign_id           uuid references public.campaigns(id),
+  campaign_title        text,
   title                 text not null,
   summary               text not null,
   photos_urls           text[] not null default '{}',
   items_delivered       jsonb not null default '[]',
   beneficiaries_reached int not null default 0,
+  event_date            date not null default now()::date,
   published             boolean not null default false,
   created_by            uuid not null references public.profiles(id),
   created_at            timestamptz not null default now()

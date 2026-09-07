@@ -25,64 +25,114 @@ export default async function AdminReportsPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="font-display text-2xl font-bold text-earth-900">Impact Reports</h1>
-        <p className="text-earth-500 text-sm mt-1">Publish reports for funded and completed campaigns</p>
+        <h1 className="font-display text-2xl font-bold text-earth-900">
+          Impact Reports
+        </h1>
+        <p className="text-earth-500 text-sm mt-1">
+          Publish reports for funded and completed campaigns
+        </p>
+      </div>
+
+      <div className="mb-6 flex justify-end">
+        <Link
+          href="/admin/reports/new-legacy"
+          className="btn-primary flex items-center gap-1 text-sm py-1.5 px-3"
+        >
+          <Plus size={14} /> Add legacy report
+        </Link>
       </div>
 
       {/* Campaigns awaiting reports */}
       {awaitingCampaigns.length > 0 && (
         <div className="mb-8">
-          <h2 className="font-semibold text-earth-700 mb-3 text-sm uppercase tracking-wide">Awaiting reports</h2>
+          <h2 className="font-semibold text-earth-700 mb-3 text-sm uppercase tracking-wide">
+            Awaiting reports
+          </h2>
           <div className="space-y-3">
             {awaitingCampaigns.map((campaign) => (
-                <div key={campaign.id} className="card p-4 flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-earth-800">{campaign.title}</p>
-                    <p className="text-xs text-earth-400">{campaign.location} · {campaign.status}</p>
-                  </div>
-                  <Link
-                    href={`/admin/reports/new?campaign_id=${campaign.id}`}
-                    className="btn-primary flex items-center gap-1 text-sm py-1.5 px-3"
-                  >
-                    <Plus size={14} /> Write report
-                  </Link>
+              <div
+                key={campaign.id}
+                className="card p-4 flex items-center justify-between"
+              >
+                <div>
+                  <p className="font-medium text-earth-800">{campaign.title}</p>
+                  <p className="text-xs text-earth-400">
+                    {campaign.location} · {campaign.status}
+                  </p>
                 </div>
-              ))}
+                <Link
+                  href={`/admin/reports/new?campaign_id=${campaign.id}`}
+                  className="btn-primary flex items-center gap-1 text-sm py-1.5 px-3"
+                >
+                  <Plus size={14} /> Write report
+                </Link>
+              </div>
+            ))}
           </div>
         </div>
       )}
 
       {/* Existing reports */}
       <div>
-        <h2 className="font-semibold text-earth-700 mb-3 text-sm uppercase tracking-wide">Reports</h2>
+        <h2 className="font-semibold text-earth-700 mb-3 text-sm uppercase tracking-wide">
+          Reports
+        </h2>
         <div className="card overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-earth-100 bg-earth-50 text-left">
-                <th className="px-5 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">Report</th>
-                <th className="px-5 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">Campaign</th>
-                <th className="px-5 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">Status</th>
-                <th className="px-5 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">Date</th>
-                <th className="px-5 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">Action</th>
+                <th className="px-5 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">
+                  Report
+                </th>
+                <th className="px-5 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">
+                  Campaign
+                </th>
+                <th className="px-5 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">
+                  Status
+                </th>
+                <th className="px-5 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">
+                  Date
+                </th>
+                <th className="px-5 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-earth-50">
               {reports?.map((report) => {
-                const campaign = report.campaigns as { title: string; location: string };
+                const campaign = report.campaigns as {
+                  title: string;
+                  location: string;
+                } | null;
+                const displayCampaignTitle =
+                  campaign?.title ?? report.campaign_title ?? "";
                 return (
                   <tr key={report.id} className="hover:bg-earth-50/50">
-                    <td className="px-5 py-4 font-medium text-earth-800">{report.title}</td>
-                    <td className="px-5 py-4 text-earth-500">{campaign?.title}</td>
+                    <td className="px-5 py-4 font-medium text-earth-800">
+                      {report.title}
+                    </td>
+                    <td className="px-5 py-4 text-earth-500">
+                      {displayCampaignTitle}
+                    </td>
                     <td className="px-5 py-4">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                        report.published ? "bg-forest-100 text-forest-700" : "bg-earth-100 text-earth-600"
-                      }`}>
+                      <span
+                        className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                          report.published
+                            ? "bg-forest-100 text-forest-700"
+                            : "bg-earth-100 text-earth-600"
+                        }`}
+                      >
                         {report.published ? "Published" : "Draft"}
                       </span>
                     </td>
-                    <td className="px-5 py-4 text-earth-400 text-xs">{formatDate(report.created_at)}</td>
+                    <td className="px-5 py-4 text-earth-400 text-xs">
+                      {formatDate(report.created_at)}
+                    </td>
                     <td className="px-5 py-4">
-                      <Link href={`/admin/reports/${report.id}/edit`} className="text-earth-600 hover:text-earth-800 inline-flex items-center gap-1 text-xs font-semibold">
+                      <Link
+                        href={`/admin/reports/${report.id}/edit`}
+                        className="text-earth-600 hover:text-earth-800 inline-flex items-center gap-1 text-xs font-semibold"
+                      >
                         <Pencil size={13} /> Edit
                       </Link>
                     </td>
@@ -92,7 +142,9 @@ export default async function AdminReportsPage() {
             </tbody>
           </table>
           {!reports?.length && (
-            <div className="py-12 text-center text-earth-400 text-sm">No reports yet.</div>
+            <div className="py-12 text-center text-earth-400 text-sm">
+              No reports yet.
+            </div>
           )}
         </div>
       </div>
