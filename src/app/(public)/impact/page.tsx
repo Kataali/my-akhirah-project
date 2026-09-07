@@ -75,7 +75,8 @@ export default async function ImpactPage() {
                     {report.title}
                   </h2>
                   <p className="text-sm text-earth-400 mb-4">
-                    {campaignTitle} · {formatDate(report.created_at)}
+                    {campaignTitle} ·{" "}
+                    {formatDate(report.event_date ?? report.created_at)}
                   </p>
                   <p className="text-earth-600 leading-relaxed mb-5">
                     {report.summary}
