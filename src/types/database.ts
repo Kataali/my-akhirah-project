@@ -68,6 +68,7 @@ export interface ImpactReportRow {
   id: string;
   campaign_id: string | null;
   campaign_title: string | null;
+  campaign_location: string | null;
   event_date: string;
   title: string;
   summary: string;
@@ -218,6 +219,8 @@ export type Database = {
           id: string;
           campaign_id: string | null;
           campaign_title: string | null;
+          campaign_location: string | null;
+          event_date: string;
           title: string;
           summary: string;
           photos_urls: string[];
@@ -230,6 +233,7 @@ export type Database = {
         Insert: {
           campaign_id?: string | null;
           campaign_title?: string | null;
+          campaign_location?: string | null;
           event_date?: string;
           title: string;
           summary: string;
@@ -242,6 +246,7 @@ export type Database = {
         Update: {
           campaign_id?: string | null;
           campaign_title?: string | null;
+          campaign_location?: string | null;
           event_date?: string;
           title?: string;
           summary?: string;

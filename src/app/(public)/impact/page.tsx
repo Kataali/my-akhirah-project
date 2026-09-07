@@ -39,7 +39,8 @@ export default async function ImpactPage() {
             } | null;
             const campaignTitle =
               campaign?.title ?? report.campaign_title ?? "";
-            const campaignLocation = campaign?.location ?? "";
+            const campaignLocation =
+              campaign?.location ?? report.campaign_location ?? "";
             return (
               <div
                 key={report.id}

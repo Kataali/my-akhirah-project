@@ -47,6 +47,8 @@ async function updateReport(formData: FormData) {
     .filter(Boolean);
 
   const event_date = (formData.get("event_date") as string) || null;
+  const campaign_location =
+    (formData.get("campaign_location") as string) || null;
 
   const itemsDelivered = parseDeliveredItems((formData.get("items_delivered") as string) || "");
 
@@ -54,6 +56,7 @@ async function updateReport(formData: FormData) {
     .from("impact_reports")
     .update({
       event_date: event_date || undefined,
+      campaign_location,
       title: formData.get("title") as string,
       summary: formData.get("summary") as string,
       photos_urls: photosUrls,
@@ -112,6 +115,18 @@ export default async function EditReportPage({ params }: { params: { id: string 
             className="input"
             defaultValue={(report.event_date ?? report.created_at).slice(0, 10)}
           />
+        </div>
+        <div>
+          <label className="label">Location</label>
+          <input
+            name="campaign_location"
+            className="input"
+            defaultValue={report.campaign_location ?? ""}
+            placeholder="e.g. Kpandai, Northern Region"
+          />
+          <p className="text-xs text-earth-400 mt-1">
+            Used for legacy reports without a linked campaign location.
+          </p>
         </div>
         <div>
           <label className="label">Report title *</label>

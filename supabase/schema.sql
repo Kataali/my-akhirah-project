@@ -138,6 +138,7 @@ create table public.impact_reports (
   id                    uuid primary key default uuid_generate_v4(),
   campaign_id           uuid references public.campaigns(id),
   campaign_title        text,
+  campaign_location     text,
   title                 text not null,
   summary               text not null,
   photos_urls           text[] not null default '{}',
