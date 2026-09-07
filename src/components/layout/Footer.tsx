@@ -7,14 +7,16 @@ export default function Footer() {
     <footer className="bg-earth-900 text-earth-200">
       <div className="mx-auto max-w-6xl px-4 md:px-8 py-14 grid grid-cols-1 md:grid-cols-3 gap-10">
         <div>
-          <div className="flex items-center gap-3 mb-3">
-            <Image
-              src="/images/logo.jpg"
-              alt="My Akhira Foundation"
-              width={40}
-              height={40}
-              className="rounded-sm"
-            />
+          <div className="flex items-center gap-4 mb-3">
+            <div className="shrink-0 rounded-md bg-white/90 p-1 shadow-sm ring-1 ring-white/30">
+              <Image
+                src="/images/logo.jpg"
+                alt="My Akhira Foundation"
+                width={48}
+                height={48}
+                className="h-12 w-12 rounded-sm object-cover"
+              />
+            </div>
             <p className="font-display text-xl font-bold text-white">
               My Akhira Foundation
             </p>
