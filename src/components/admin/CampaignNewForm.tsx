@@ -29,6 +29,7 @@ export default function CampaignNewForm({ createAction }: CampaignNewFormProps) 
       target_amount: 1000,
       status: "draft",
       currency: "GHS",
+      cover_image_url: "",
       items_needed: [
         { name: "Water filter", quantity: 50, unit: "units", unit_cost_ghs: 80 },
         { name: "Rice (50kg bag)", quantity: 30, unit: "bags", unit_cost_ghs: 220 },
@@ -159,6 +160,18 @@ export default function CampaignNewForm({ createAction }: CampaignNewFormProps) 
             <option value="draft">Draft (not visible to public)</option>
             <option value="active">Active (live now)</option>
           </select>
+        </div>
+
+        <div className="md:col-span-2">
+          <label className="label">Cover image URL</label>
+          <input
+            {...register("cover_image_url")}
+            type="url"
+            placeholder="https://..."
+            className={`input ${errors.cover_image_url ? "border-red-500" : ""}`}
+          />
+          {errors.cover_image_url && <p className="text-red-500 text-xs mt-1">{errors.cover_image_url.message}</p>}
+          <p className="text-xs text-earth-400 mt-1">Optional. Use a public image URL.</p>
         </div>
 
         <div className="md:col-span-2">

@@ -16,6 +16,10 @@ async function updateCampaign(formData: FormData) {
   const requestedStatus = formData.get("status") as "draft" | "active" | "funded" | "completed";
   const title = formData.get("title") as string;
   const slug = slugify(title);
+  const coverImageInput = formData.get("cover_image_url");
+  const cover_image_url = typeof coverImageInput === "string" && coverImageInput.trim().length > 0
+    ? coverImageInput.trim()
+    : null;
 
   const { data: existingCampaign, error: campaignError } = await admin
     .from("campaigns")
@@ -46,6 +50,7 @@ async function updateCampaign(formData: FormData) {
     slug,
     description: formData.get("description") as string,
     story: formData.get("story") as string,
+    cover_image_url,
     location: formData.get("location") as string,
     region: formData.get("region") as string,
     target_amount: parseFloat(formData.get("target_amount") as string),

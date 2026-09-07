@@ -12,6 +12,13 @@ export const campaignSchema = z.object({
   status: z.enum(["draft", "active", "funded", "completed"]),
   beneficiaries_count: z.number().nullable().optional(),
   end_date: z.string().nullable().optional(),
+  cover_image_url: z.preprocess(
+    (value) => {
+      if (typeof value === "string" && value.trim() === "") return null;
+      return value;
+    },
+    z.string().url("Enter a valid image URL").nullable().optional(),
+  ),
   items_needed: z.array(z.object({
     name: z.string(),
     quantity: z.number(),

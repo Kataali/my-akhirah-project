@@ -36,6 +36,7 @@ export default function CampaignEditForm({ campaign, updateAction }: CampaignEdi
       beneficiaries_count: campaign.beneficiaries_count,
       end_date: campaign.end_date,
       currency: campaign.currency,
+      cover_image_url: campaign.cover_image_url ?? "",
       items_needed: campaign.items_needed as any[],
     },
   });
@@ -169,6 +170,18 @@ export default function CampaignEditForm({ campaign, updateAction }: CampaignEdi
               This status is managed automatically by confirmed payments and published impact reports.
             </p>
           )}
+        </div>
+
+        <div className="md:col-span-2">
+          <label className="label">Cover image URL</label>
+          <input
+            {...register("cover_image_url")}
+            type="url"
+            placeholder="https://..."
+            className={`input ${errors.cover_image_url ? "border-red-500" : ""}`}
+          />
+          {errors.cover_image_url && <p className="text-red-500 text-xs mt-1">{errors.cover_image_url.message}</p>}
+          <p className="text-xs text-earth-400 mt-1">Optional. Use a public image URL.</p>
         </div>
 
         <div className="md:col-span-2">
