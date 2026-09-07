@@ -50,7 +50,7 @@ export default async function HomePage() {
               Change lives today.
             </h1>
             <p className="text-lg md:text-xl text-earth-200 leading-relaxed mb-8">
-              My Akhirah Project channels your investments into delivering essential items — food, water, medicine, and shelter — to remote communities across Northern Ghana.
+              My Akhira Foundation channels your investments into delivering essential items — food, water, medicine, and shelter — to remote communities across Northern Ghana.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link href="/campaigns" className="btn-primary bg-earth-500 hover:bg-earth-400 text-base px-7 py-3">

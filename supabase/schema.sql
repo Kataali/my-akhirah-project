@@ -1,5 +1,5 @@
 -- ============================================================
--- My Akhirah Project — Supabase Schema
+-- My Akhira Foundation — Supabase Schema
 -- Run this in Supabase SQL Editor or save as a migration file
 -- ============================================================
 

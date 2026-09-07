@@ -23,8 +23,8 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   ),
   title: {
-    default: "My Akhirah Project",
-    template: "%s | My Akhirah Project",
+    default: "My Akhira Foundation",
+    template: "%s | My Akhira Foundation",
   },
   description:
     "Connecting investors with communities in Northern Ghana. Every contribution delivers essential items to those who need them most.",
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_GH",
     url: "https://myakhirahproject.org",
-    siteName: "My Akhirah Project",
+    siteName: "My Akhira Foundation",
     images: [
       { url: "/og-image.jpg", width: 1200, height: 630 },
       { url: "/images/logo.jpg", width: 1200, height: 630 },

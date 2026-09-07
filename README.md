@@ -1,4 +1,4 @@
-# My Akhirah Project
+# My Akhira Foundation
 
 A full-stack charity web platform connecting investors with communities in Northern Ghana.
 

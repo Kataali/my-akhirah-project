@@ -40,7 +40,7 @@ export default async function AdminOverviewPage() {
     <div>
       <div className="mb-8">
         <h1 className="font-display text-2xl font-bold text-earth-900">Overview</h1>
-        <p className="text-earth-500 text-sm mt-1">Welcome back. Here's a snapshot of My Akhirah Project.</p>
+        <p className="text-earth-500 text-sm mt-1">Welcome back. Here's a snapshot of My Akhira Foundation.</p>
       </div>
 
       {/* Stat cards */}

@@ -6,7 +6,7 @@ import { formatDate } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Impact",
-  description: "See the real-world impact of contributions through My Akhirah Project.",
+  description: "See the real-world impact of contributions through My Akhira Foundation.",
 };
 
 export default async function ImpactPage() {

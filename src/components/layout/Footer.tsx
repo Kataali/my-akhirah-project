@@ -10,13 +10,13 @@ export default function Footer() {
           <div className="flex items-center gap-3 mb-3">
             <Image
               src="/images/logo.jpg"
-              alt="My Akhirah Project"
+              alt="My Akhira Foundation"
               width={40}
               height={40}
               className="rounded-sm"
             />
             <p className="font-display text-xl font-bold text-white">
-              My Akhirah Project
+              My Akhira Foundation
             </p>
           </div>
           <p className="text-sm text-earth-300 leading-relaxed">
@@ -58,7 +58,7 @@ export default function Footer() {
             <li>Northern Ghana, GH</li>
           </ul>
           <p className="mt-6 text-xs text-earth-500">
-            © {new Date().getFullYear()} My Akhirah Project. All rights
+            © {new Date().getFullYear()} My Akhira Foundation. All rights
             reserved.
           </p>
         </div>

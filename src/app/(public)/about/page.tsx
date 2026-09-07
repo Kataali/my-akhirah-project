@@ -3,22 +3,22 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "About Us",
-  description: "Learn about My Akhirah Project and our mission to serve communities in Northern Ghana.",
+  description: "Learn about My Akhira Foundation and our mission to serve communities in Northern Ghana.",
 };
 
 export default function AboutPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 md:px-8 py-16">
       <p className="text-xs font-semibold uppercase tracking-widest text-earth-400 mb-3">Our story</p>
-      <h1 className="section-heading mb-6">About My Akhirah Project</h1>
+      <h1 className="section-heading mb-6">About My Akhira Foundation</h1>
 
       <div className="prose prose-earth max-w-none text-earth-600 leading-relaxed space-y-5">
         <p className="text-lg text-earth-700">
-          My Akhirah Project was born from a simple belief: that our actions in this world are seeds planted for the next. Every act of giving is an investment — not just in a community, but in one's own hereafter.
+          My Akhira Foundation was born from a simple belief: that our actions in this world are seeds planted for the next. Every act of giving is an investment — not just in a community, but in one's own hereafter.
         </p>
 
         <p>
-          We operate in Northern Ghana, one of the most underserved regions in the country. Remote villages here often lack access to clean water, adequate food, basic medicines, and educational materials. My Akhirah Project bridges this gap by connecting investors with specific, tangible campaigns.
+          We operate in Northern Ghana, one of the most underserved regions in the country. Remote villages here often lack access to clean water, adequate food, basic medicines, and educational materials. My Akhira Foundation bridges this gap by connecting investors with specific, tangible campaigns.
         </p>
 
         <h2 className="font-display text-2xl font-bold text-earth-800 mt-8 mb-3">How we work</h2>

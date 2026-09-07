@@ -57,7 +57,7 @@ export async function sendDonationReceipt(params: {
           </a>
 
           <p style="margin-top: 32px; font-size: 13px; color: #2f6a43;">
-            My Akhirah Project is a charity initiative dedicated to delivering crucial items to remote communities in Northern Ghana.<br>
+            My Akhira Foundation is a charity initiative dedicated to delivering crucial items to remote communities in Northern Ghana.<br>
             <a href="${APP_URL}" style="color: #2f9e57;">${APP_URL}</a>
           </p>
         </div>

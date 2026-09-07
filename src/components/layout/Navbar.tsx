@@ -41,13 +41,13 @@ export default function Navbar({
         <Link href="/" className="flex items-center gap-3">
           <Image
             src="/images/logo.jpg"
-            alt="My Akhirah Project"
+            alt="My Akhira Foundation"
             width={36}
             height={36}
             className="rounded-sm"
           />
           <span className="font-display text-xl font-bold text-earth-700">
-            My Akhirah Project
+            My Akhira Foundation
           </span>
         </Link>
 

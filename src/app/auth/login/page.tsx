@@ -95,13 +95,13 @@ export default function LoginPage({
           <Link href="/" className="inline-flex items-center gap-3">
             <Image
               src="/images/logo.jpg"
-              alt="My Akhirah Project"
+              alt="My Akhira Foundation"
               width={40}
               height={40}
               className="rounded-sm"
             />
             <span className="font-display text-2xl font-bold text-white">
-              My Akhirah Project
+              My Akhira Foundation
             </span>
           </Link>
           <p className="text-earth-300 text-sm mt-2">

@@ -32,7 +32,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       {/* Sidebar */}
       <aside className="w-60 bg-earth-900 text-white flex flex-col shrink-0">
         <div className="px-5 py-5 border-b border-earth-700">
-          <p className="font-display text-sm font-bold text-white">My Akhirah Project</p>
+          <p className="font-display text-sm font-bold text-white">My Akhira Foundation</p>
           <p className="text-xs text-earth-400 mt-0.5">Admin Panel</p>
         </div>
 
