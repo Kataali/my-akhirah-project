@@ -92,15 +92,18 @@ export default function LoginPage({
     <div className="min-h-screen bg-earth-900 flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-3">
-            <Image
-              src="/images/logo.jpg"
-              alt="My Akhira Foundation"
-              width={40}
-              height={40}
-              className="rounded-sm"
-            />
-            <span className="font-display text-2xl font-bold text-white">
+          <Link href="/" className="inline-flex items-center gap-4 max-w-full">
+            <span className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-white/95 p-2 shadow-sm ring-1 ring-white/30">
+              <Image
+                src="/images/logo.jpg"
+                alt="My Akhira Foundation"
+                fill
+                sizes="80px"
+                className="object-contain p-1"
+                priority
+              />
+            </span>
+            <span className="font-display text-2xl font-bold leading-tight text-white text-left">
               My Akhira Foundation
             </span>
           </Link>

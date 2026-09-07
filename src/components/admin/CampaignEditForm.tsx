@@ -37,7 +37,7 @@ export default function CampaignEditForm({ campaign, updateAction }: CampaignEdi
       end_date: campaign.end_date,
       currency: campaign.currency,
       cover_image_url: campaign.cover_image_url ?? "",
-      items_needed: campaign.items_needed as any[],
+      items_needed: JSON.stringify(campaign.items_needed ?? [], null, 2) as any,
     },
   });
 
