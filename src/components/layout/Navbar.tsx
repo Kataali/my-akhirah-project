@@ -119,6 +119,15 @@ export default function Navbar({
           <div className="pt-2 border-t border-earth-100 flex flex-col gap-2">
             {user ? (
               <>
+                {user.role === "admin" && (
+                  <Link
+                    href="/admin"
+                    className="btn-ghost w-full text-center"
+                    onClick={() => setOpen(false)}
+                  >
+                    Admin Panel
+                  </Link>
+                )}
                 <Link
                   href="/dashboard"
                   className="btn-secondary w-full text-center"
