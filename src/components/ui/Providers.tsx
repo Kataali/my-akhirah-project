@@ -8,7 +8,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       {children}
       <ProgressBar
         height="3px"
-        color="#8B5A2B" /* earth-600 */
+        color="#2fa64f" /* earth-600 (logo green) */
         options={{ showSpinner: true }}
         shallowRouting
       />

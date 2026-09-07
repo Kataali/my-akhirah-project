@@ -36,15 +36,15 @@ export async function sendDonationReceipt(params: {
 }) {
   const { to, investor_name, amount_ghs, campaign_title, campaign_slug, reference } = params;
   const html = `
-      <div style="font-family: Georgia, serif; max-width: 560px; margin: 0 auto; color: #2d2416;">
-        <div style="background: #c97520; padding: 32px; border-radius: 8px 8px 0 0;">
+      <div style="font-family: Georgia, serif; max-width: 560px; margin: 0 auto; color: #1a552d;">
+        <div style="background: #2fa64f; padding: 32px; border-radius: 8px 8px 0 0;">
           <h1 style="color: #fff; margin: 0; font-size: 24px;">${APP_NAME}</h1>
         </div>
-        <div style="background: #fdf6ee; padding: 32px; border-radius: 0 0 8px 8px;">
+        <div style="background: #f5fbf7; padding: 32px; border-radius: 0 0 8px 8px;">
           <p style="font-size: 18px;">Assalamu alaikum, ${investor_name},</p>
           <p>JazakAllahu Khayran. Your contribution has been received and will go towards delivering essential items to communities in Northern Ghana.</p>
           
-          <div style="background: #fff; border: 1px solid #e6aa5a; border-radius: 6px; padding: 20px; margin: 24px 0;">
+          <div style="background: #fff; border: 1px solid #72d48d; border-radius: 6px; padding: 20px; margin: 24px 0;">
             <p style="margin: 0 0 8px;"><strong>Campaign:</strong> ${campaign_title}</p>
             <p style="margin: 0 0 8px;"><strong>Amount:</strong> GHS ${amount_ghs.toFixed(2)}</p>
             <p style="margin: 0;"><strong>Reference:</strong> ${reference}</p>
@@ -52,13 +52,13 @@ export async function sendDonationReceipt(params: {
 
           <p>You can track the progress of this campaign and see the impact report when it is published.</p>
           <a href="${APP_URL}/campaigns/${campaign_slug}" 
-             style="display: inline-block; background: #c97520; color: #fff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-top: 8px;">
+             style="display: inline-block; background: #2fa64f; color: #fff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-top: 8px;">
             View Campaign
           </a>
 
-          <p style="margin-top: 32px; font-size: 13px; color: #7a6648;">
+          <p style="margin-top: 32px; font-size: 13px; color: #2f6a43;">
             My Akhirah Project is a charity initiative dedicated to delivering crucial items to remote communities in Northern Ghana.<br>
-            <a href="${APP_URL}" style="color: #c97520;">${APP_URL}</a>
+            <a href="${APP_URL}" style="color: #2f9e57;">${APP_URL}</a>
           </p>
         </div>
       </div>
@@ -131,10 +131,10 @@ export async function sendImpactReportNotification(params: {
       <div style="font-family: Georgia, serif; max-width: 560px; margin: 0 auto;">
         <p>Assalamu alaikum, ${investor_name},</p>
         <p>Thanks to contributors like you, the <strong>${campaign_title}</strong> campaign has been completed. Here is a summary of the impact:</p>
-        <blockquote style="border-left: 3px solid #c97520; padding-left: 16px; color: #5a4a30;">
+        <blockquote style="border-left: 3px solid #2fa64f; padding-left: 16px; color: #1f6a36;">
           ${report_summary}
         </blockquote>
-        <a href="${APP_URL}/campaigns/${campaign_slug}" style="color: #c97520;">See the full report with photos →</a>
+        <a href="${APP_URL}/campaigns/${campaign_slug}" style="color: #2f9e57;">See the full report with photos →</a>
       </div>
     `;
 

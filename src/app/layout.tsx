@@ -70,9 +70,9 @@ export default function RootLayout({
               style: {
                 fontFamily: "var(--font-body)",
                 borderRadius: "8px",
-                background: "#fdf6ee",
-                color: "#572e19",
-                border: "1px solid #e6aa5a",
+                background: "#f5fbf7",
+                color: "#1a552d",
+                border: "1px solid #72d48d",
               },
             }}
           />
