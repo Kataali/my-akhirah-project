@@ -105,7 +105,7 @@ export default async function EditReportPage({ params }: { params: { id: string 
         </p>
       </div>
 
-      <form action={updateReport} className="card p-7 space-y-5">
+      <form action={updateReport} className="card p-4 sm:p-7 space-y-5">
         <input type="hidden" name="id" value={report.id} />
         <div>
           <label className="label">Event date *</label>

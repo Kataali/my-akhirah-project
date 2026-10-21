@@ -48,15 +48,15 @@ export default async function AdminOverviewPage() {
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
         {stats.map(({ icon: Icon, label, value, href, color }) => (
           <Link
             key={label}
             href={href}
-            className="card p-5 hover:shadow-md transition-shadow"
+            className="card p-4 sm:p-5 hover:shadow-md transition-shadow"
           >
             <Icon size={20} className={`${color} mb-3`} />
-            <p className="font-display text-2xl font-bold text-earth-900">
+            <p className="font-display text-xl sm:text-2xl font-bold text-earth-900 break-words">
               {value}
             </p>
             <p className="text-xs text-earth-400 mt-1">{label}</p>
@@ -66,11 +66,11 @@ export default async function AdminOverviewPage() {
 
       {/* Recent contributions */}
       <div className="card overflow-hidden">
-        <div className="flex items-center justify-between p-5 border-b border-earth-100">
+        <div className="flex items-center justify-between p-4 sm:p-5 border-b border-earth-100 gap-2">
           <h2 className="font-semibold text-earth-800">Recent Contributions</h2>
           <Link
             href="/admin/investors"
-            className="text-xs text-earth-400 hover:text-earth-700 flex items-center gap-1"
+            className="text-xs text-earth-400 hover:text-earth-700 flex items-center gap-1 shrink-0"
           >
             View all <ArrowRight size={12} />
           </Link>
@@ -86,19 +86,19 @@ export default async function AdminOverviewPage() {
               return (
                 <div
                   key={i}
-                  className="flex items-center justify-between px-5 py-3 text-sm"
+                  className="flex items-center justify-between gap-3 px-4 sm:px-5 py-3 text-sm"
                 >
-                  <div>
-                    <p className="text-earth-700 font-medium">
+                  <div className="min-w-0">
+                    <p className="text-earth-700 font-medium truncate">
                       {c.anonymous
                         ? "Anonymous"
                         : (prof?.full_name ?? prof?.email ?? "Investor")}
                     </p>
-                    <p className="text-xs text-earth-400">
+                    <p className="text-xs text-earth-400 truncate">
                       {camp?.title ?? "Campaign"}
                     </p>
                   </div>
-                  <p className="font-semibold text-earth-700">
+                  <p className="font-semibold text-earth-700 shrink-0">
                     {formatCurrency(c.amount)}
                   </p>
                 </div>

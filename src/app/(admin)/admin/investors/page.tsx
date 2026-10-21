@@ -22,37 +22,39 @@ export default async function AdminInvestorsPage() {
       </div>
 
       <div className="card overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-earth-100 bg-earth-50 text-left">
-              <th className="px-5 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">Investor</th>
-              <th className="px-5 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">Total contributed</th>
-              <th className="px-5 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">Contributions</th>
-              <th className="px-5 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">Joined</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-earth-50">
-            {investors?.map((investor) => {
-              const successfulContributions = (investor.contributions as { amount: number; status: string }[])
-                ?.filter((c) => c.status === "success") ?? [];
-              const total = successfulContributions.reduce((sum, c) => sum + c.amount, 0);
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[540px] text-sm">
+            <thead>
+              <tr className="border-b border-earth-100 bg-earth-50 text-left">
+                <th className="px-5 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">Investor</th>
+                <th className="px-5 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">Total contributed</th>
+                <th className="px-5 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">Contributions</th>
+                <th className="px-5 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">Joined</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-earth-50">
+              {investors?.map((investor) => {
+                const successfulContributions = (investor.contributions as { amount: number; status: string }[])
+                  ?.filter((c) => c.status === "success") ?? [];
+                const total = successfulContributions.reduce((sum, c) => sum + c.amount, 0);
 
-              return (
-                <tr key={investor.id} className="hover:bg-earth-50/50 transition-colors">
-                  <td className="px-5 py-4">
-                    <p className="font-medium text-earth-800">{investor.full_name ?? "—"}</p>
-                    <p className="text-xs text-earth-400">{investor.email}</p>
-                  </td>
-                  <td className="px-5 py-4 font-semibold text-earth-700">
-                    {total > 0 ? formatCurrency(total) : <span className="text-earth-300">—</span>}
-                  </td>
-                  <td className="px-5 py-4 text-earth-500">{successfulContributions.length}</td>
-                  <td className="px-5 py-4 text-earth-400 text-xs">{formatDate(investor.created_at)}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                return (
+                  <tr key={investor.id} className="hover:bg-earth-50/50 transition-colors">
+                    <td className="px-5 py-4">
+                      <p className="font-medium text-earth-800">{investor.full_name ?? "—"}</p>
+                      <p className="text-xs text-earth-400 break-all">{investor.email}</p>
+                    </td>
+                    <td className="px-5 py-4 font-semibold text-earth-700 whitespace-nowrap">
+                      {total > 0 ? formatCurrency(total) : <span className="text-earth-300">—</span>}
+                    </td>
+                    <td className="px-5 py-4 text-earth-500">{successfulContributions.length}</td>
+                    <td className="px-5 py-4 text-earth-400 text-xs whitespace-nowrap">{formatDate(investor.created_at)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
 
         {!investors?.length && (
           <div className="py-16 text-center text-earth-400">No investors yet.</div>

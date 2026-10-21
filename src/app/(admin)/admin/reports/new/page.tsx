@@ -111,7 +111,7 @@ export default async function NewReportPage({
         </p>
       </div>
 
-      <form action={createReport} className="card p-7 space-y-5">
+      <form action={createReport} className="card p-4 sm:p-7 space-y-5">
         <div>
           <div>
             <label className="label">Event date *</label>

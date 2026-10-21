@@ -63,7 +63,7 @@ export default function CampaignNewForm({ createAction }: CampaignNewFormProps) 
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="card p-7 space-y-5">
+    <form onSubmit={handleSubmit(onSubmit)} className="card p-4 sm:p-7 space-y-5">
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
           {error}

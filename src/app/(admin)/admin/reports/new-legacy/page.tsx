@@ -63,7 +63,7 @@ export default function NewLegacyReportPage() {
         </p>
       </div>
 
-      <form action={createLegacyReport} className="card p-7 space-y-5">
+      <form action={createLegacyReport} className="card p-4 sm:p-7 space-y-5">
         <div>
           <label className="label">Campaign title *</label>
           <input

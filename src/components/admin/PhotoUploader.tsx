@@ -102,7 +102,7 @@ export function PhotoUploader({
       )}
 
       {parsedUrls.length > 0 && (
-        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
           {parsedUrls.map((url, index) => (
             <div
               key={`${url}-${index}`}
@@ -230,7 +230,7 @@ export function CoverImageUploader({
       )}
 
       {value && (
-        <div className="relative h-36 w-60 overflow-hidden rounded-lg border border-earth-200 bg-earth-50">
+        <div className="relative h-36 w-full max-w-[240px] overflow-hidden rounded-lg border border-earth-200 bg-earth-50">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={value}
