@@ -3,6 +3,7 @@ import SubmitButton from "@/components/ui/SubmitButton";
 import { createAdminClient, createServerSupabaseClient, requireAdmin } from "@/lib/supabase/server";
 import { parseDeliveredItems } from "@/lib/report-items";
 import { PhotoUploader } from "@/components/admin/PhotoUploader";
+import DeliveredItemsInput from "@/components/admin/DeliveredItemsInput";
 
 async function updateReport(formData: FormData) {
   "use server";
@@ -164,19 +165,10 @@ export default async function EditReportPage({ params }: { params: { id: string 
           defaultUrls={report.photos_urls ?? []}
           folder="reports"
         />
-        <div>
-          <label className="label">Items delivered</label>
-          <textarea
-            name="items_delivered"
-            rows={4}
-            defaultValue={JSON.stringify(report.items_delivered, null, 2)}
-            className="input resize-none font-mono text-xs"
-          />
-          <p className="text-xs text-earth-400 mt-1">
-            Use a simple list like [sugar, rice], or detailed JSON with
-            quantities.
-          </p>
-        </div>
+        <DeliveredItemsInput
+          name="items_delivered"
+          defaultItems={report.items_delivered ?? []}
+        />
         <div>
           <label className="label">Status</label>
           <select

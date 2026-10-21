@@ -5,6 +5,7 @@ import { createAdminClient, createServerSupabaseClient, requireAdmin } from "@/l
 import SubmitButton from "@/components/ui/SubmitButton";
 import { parseDeliveredItems } from "@/lib/report-items";
 import { PhotoUploader } from "@/components/admin/PhotoUploader";
+import DeliveredItemsInput from "@/components/admin/DeliveredItemsInput";
 
 async function createReport(formData: FormData) {
   "use server";
@@ -179,25 +180,10 @@ export default async function NewReportPage({
 
         <PhotoUploader name="photos_urls" folder="reports" />
 
-        <div>
-          <label className="label">Items delivered</label>
-          <textarea
-            name="items_delivered"
-            rows={4}
-            className="input resize-none font-mono text-xs"
-            defaultValue={JSON.stringify(
-              campaign?.items_needed ?? [
-                { name: "Example item", quantity: 50, unit: "units" },
-              ],
-              null,
-              2,
-            )}
-          />
-          <p className="text-xs text-earth-400 mt-1">
-            Use a simple list like [sugar, rice], or detailed JSON with
-            quantities.
-          </p>
-        </div>
+        <DeliveredItemsInput
+          name="items_delivered"
+          defaultItems={campaign?.items_needed ?? []}
+        />
 
         <div>
           <label className="label">Publish immediately?</label>

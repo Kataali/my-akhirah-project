@@ -5,6 +5,7 @@ import { createAdminClient, requireAdmin } from "@/lib/supabase/server";
 import SubmitButton from "@/components/ui/SubmitButton";
 import { parseDeliveredItems } from "@/lib/report-items";
 import { PhotoUploader } from "@/components/admin/PhotoUploader";
+import DeliveredItemsInput from "@/components/admin/DeliveredItemsInput";
 
 async function createLegacyReport(formData: FormData) {
   "use server";
@@ -133,23 +134,7 @@ export default function NewLegacyReportPage() {
 
         <PhotoUploader name="photos_urls" folder="reports" />
 
-        <div>
-          <label className="label">Items delivered</label>
-          <textarea
-            name="items_delivered"
-            rows={4}
-            className="input resize-none font-mono text-xs"
-            defaultValue={JSON.stringify(
-              [{ name: "Example item", quantity: 50, unit: "units" }],
-              null,
-              2,
-            )}
-          />
-          <p className="text-xs text-earth-400 mt-1">
-            Use a simple list like [sugar, rice], or detailed JSON with
-            quantities.
-          </p>
-        </div>
+        <DeliveredItemsInput name="items_delivered" />
 
         <div>
           <label className="label">Publish immediately?</label>

@@ -3,6 +3,7 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
+import { formatDeliveredItem } from "@/lib/report-items";
 
 export const metadata: Metadata = {
   title: "Impact",
@@ -94,8 +95,8 @@ export default async function ImpactPage() {
                           (
                             item: {
                               name: string;
-                              quantity: number;
-                              unit: string;
+                              quantity?: number;
+                              unit?: string;
                             },
                             i: number,
                           ) => (
@@ -104,7 +105,7 @@ export default async function ImpactPage() {
                               className="text-sm text-earth-600 flex gap-2"
                             >
                               <span className="text-earth-300">·</span>
-                              {item.quantity} {item.unit} of {item.name}
+                              {formatDeliveredItem(item)}
                             </li>
                           ),
                         )}

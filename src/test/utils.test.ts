@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { formatCurrency, progressPercent, slugify } from "@/lib/utils";
+import { formatCurrency, progressPercent, slugify } from "../lib/utils";
+import { formatDeliveredItem, parseDeliveredItems } from "../lib/report-items";
 
 describe("Utility Functions", () => {
   describe("formatCurrency", () => {
@@ -32,6 +33,39 @@ describe("Utility Functions", () => {
     it("converts strings to URL-friendly slugs", () => {
       expect(slugify("Hello World")).toBe("hello-world");
       expect(slugify("Campaign for Northern Ghana!")).toBe("campaign-for-northern-ghana");
+    });
+  });
+
+  describe("Delivered Items formatting & parsing", () => {
+    it("formats quantity + unit + name as 'quantity unit of name'", () => {
+      expect(
+        formatDeliveredItem({ name: "pens", quantity: 20, unit: "packs" })
+      ).toBe("20 packs of pens");
+    });
+
+    it("formats quantity + name (no unit) as 'quantity name'", () => {
+      expect(
+        formatDeliveredItem({ name: "wall clocks", quantity: 50 })
+      ).toBe("50 wall clocks");
+    });
+
+    it("formats name only when neither quantity nor unit is provided", () => {
+      expect(formatDeliveredItem({ name: "Borehole rehabilitation" })).toBe(
+        "Borehole rehabilitation"
+      );
+    });
+
+    it("parses items with and without units cleanly", () => {
+      const parsed = parseDeliveredItems(
+        JSON.stringify([
+          { name: "pens", quantity: 20, unit: "packs" },
+          { name: "wall clocks", quantity: 50 },
+        ])
+      );
+      expect(parsed).toEqual([
+        { name: "pens", quantity: 20, unit: "packs" },
+        { name: "wall clocks", quantity: 50 },
+      ]);
     });
   });
 });
