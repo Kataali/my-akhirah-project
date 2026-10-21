@@ -1,9 +1,9 @@
 // src/app/(public)/impact/page.tsx
-import Image from "next/image";
 import type { Metadata } from "next";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
 import { formatDeliveredItem } from "@/lib/report-items";
+import ImpactPhotoGallery from "@/components/impact/ImpactPhotoGallery";
 
 export const metadata: Metadata = {
   title: "Impact",
@@ -49,23 +49,10 @@ export default async function ImpactPage() {
               >
                 {/* Photos */}
                 {report.photos_urls?.length > 0 && (
-                  <div className="grid grid-cols-2 gap-3">
-                    {report.photos_urls
-                      .slice(0, 4)
-                      .map((url: string, i: number) => (
-                        <div
-                          key={i}
-                          className={`relative rounded-xl overflow-hidden bg-earth-100 ${i === 0 ? "col-span-2 h-56" : "h-36"}`}
-                        >
-                          <Image
-                            src={url}
-                            alt={`Impact photo ${i + 1}`}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                      ))}
-                  </div>
+                  <ImpactPhotoGallery
+                    photos={report.photos_urls}
+                    title={report.title}
+                  />
                 )}
 
                 {/* Content */}
