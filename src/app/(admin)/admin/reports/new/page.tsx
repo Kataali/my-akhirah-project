@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { createAdminClient, createServerSupabaseClient, requireAdmin } from "@/lib/supabase/server";
 import SubmitButton from "@/components/ui/SubmitButton";
 import { parseDeliveredItems } from "@/lib/report-items";
+import { notifyInvestorsOfImpactReport } from "@/lib/email";
 import { PhotoUploader } from "@/components/admin/PhotoUploader";
 import DeliveredItemsInput from "@/components/admin/DeliveredItemsInput";
 
@@ -65,13 +66,18 @@ async function createReport(formData: FormData) {
 
   if (error) throw new Error(error.message);
 
-  // Mark campaign as completed if publishing
+  // Mark campaign as completed and notify investors if publishing
   if (published && campaign_id) {
     await admin
       .from("campaigns")
       .update({ status: "completed" })
       .eq("id", campaign_id)
       .eq("status", "funded");
+
+    await notifyInvestorsOfImpactReport({
+      campaignId: campaign_id,
+      reportSummary: formData.get("summary") as string,
+    });
   }
 
   redirect("/admin/reports");

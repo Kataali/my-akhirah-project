@@ -1,6 +1,7 @@
 // src/lib/email.ts
 import { Resend } from "resend";
 import sgMail from "@sendgrid/mail";
+import { createAdminClient } from "@/lib/supabase/server";
 
 const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME!;
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL!;
@@ -149,4 +150,57 @@ export async function sendImpactReportNotification(params: {
   }
 
   console.warn("No email provider configured: set SENDGRID_API_KEY or RESEND_API_KEY to send emails");
+}
+
+/**
+ * Notify all unique contributors (registered users and guests) of a campaign
+ * when its impact report is published.
+ */
+export async function notifyInvestorsOfImpactReport(params: {
+  campaignId: string;
+  reportSummary: string;
+}) {
+  try {
+    const admin = createAdminClient();
+    const { data: campaign } = await admin
+      .from("campaigns")
+      .select("title, slug")
+      .eq("id", params.campaignId)
+      .single();
+
+    if (!campaign) return;
+
+    const { data: contributions } = await admin
+      .from("contributions")
+      .select("guest_email, profiles(full_name, email)")
+      .eq("campaign_id", params.campaignId)
+      .eq("status", "success");
+
+    if (!contributions || contributions.length === 0) return;
+
+    const recipients = new Map<string, string>();
+    for (const c of contributions) {
+      const prof = c.profiles as { full_name?: string | null; email?: string | null } | null;
+      const email = (prof?.email || c.guest_email || "").trim().toLowerCase();
+      if (!email) continue;
+      if (!recipients.has(email)) {
+        const name = prof?.full_name?.trim() || email.split("@")[0] || "Valued Investor";
+        recipients.set(email, name);
+      }
+    }
+
+    await Promise.allSettled(
+      Array.from(recipients.entries()).map(([to, investor_name]) =>
+        sendImpactReportNotification({
+          to,
+          investor_name,
+          campaign_title: campaign.title,
+          campaign_slug: campaign.slug,
+          report_summary: params.reportSummary,
+        })
+      )
+    );
+  } catch (err) {
+    console.error("Failed to send impact report notifications:", err);
+  }
 }

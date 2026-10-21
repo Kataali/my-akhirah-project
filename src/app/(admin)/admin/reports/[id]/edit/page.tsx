@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import SubmitButton from "@/components/ui/SubmitButton";
 import { createAdminClient, createServerSupabaseClient, requireAdmin } from "@/lib/supabase/server";
 import { parseDeliveredItems } from "@/lib/report-items";
+import { notifyInvestorsOfImpactReport } from "@/lib/email";
 import { PhotoUploader } from "@/components/admin/PhotoUploader";
 import DeliveredItemsInput from "@/components/admin/DeliveredItemsInput";
 
@@ -77,6 +78,13 @@ async function updateReport(formData: FormData) {
       .update({ status: "completed" })
       .eq("id", existing.campaign_id)
       .eq("status", "funded");
+
+    if (!existing.published) {
+      await notifyInvestorsOfImpactReport({
+        campaignId: existing.campaign_id,
+        reportSummary: formData.get("summary") as string,
+      });
+    }
   }
 
   redirect("/admin/reports");
