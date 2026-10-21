@@ -89,21 +89,24 @@ export default function LoginPage({
   }
 
   return (
-    <div className="min-h-screen bg-earth-900 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-earth-900 flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-4 max-w-full">
-            <span className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-white/95 p-2 shadow-sm ring-1 ring-white/30">
+          <Link
+            href="/"
+            className="inline-flex flex-col items-center justify-center gap-3 max-w-full"
+          >
+            <span className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full bg-white p-1.5 shadow-sm ring-2 ring-white/40">
               <Image
                 src="/images/logo.jpg"
                 alt="My Akhira Foundation"
                 fill
                 sizes="80px"
-                className="object-contain p-1"
+                className="rounded-full object-contain p-1"
                 priority
               />
             </span>
-            <span className="font-display text-2xl font-bold leading-tight text-white text-left">
+            <span className="font-display text-2xl font-bold leading-tight text-white text-center">
               My Akhira Foundation
             </span>
           </Link>
@@ -114,7 +117,7 @@ export default function LoginPage({
           </p>
         </div>
 
-        <div className="card p-7">
+        <div className="card p-5 sm:p-7">
           {/* Mode toggle */}
           <div className="flex rounded-lg overflow-hidden border border-earth-200 mb-6">
             {(["login", "signup"] as const).map((m) => (
