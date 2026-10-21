@@ -37,7 +37,7 @@ export default function Footer() {
               ["Campaigns", "/campaigns"],
               ["Impact Reports", "/impact"],
               ["About Us", "/about"],
-              ["Invest Now", "/campaigns"],
+              ["Privacy Policy", "/privacy"],
             ].map(([label, href]) => (
               <li key={href}>
                 <Link
