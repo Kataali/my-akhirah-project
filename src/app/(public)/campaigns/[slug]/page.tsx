@@ -1,12 +1,13 @@
 // src/app/(public)/campaigns/[slug]/page.tsx
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
 import type { Metadata } from "next";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { formatCurrency, progressPercent, formatDate } from "@/lib/utils";
+import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatDeliveredItem } from "@/lib/report-items";
 import { MapPin, Users, Calendar, Package } from "lucide-react";
 import CampaignStats from "@/components/campaign/CampaignStats";
+import ImpactPhotoGallery from "@/components/impact/ImpactPhotoGallery";
 
 type Props = { params: { slug: string } };
 
@@ -49,8 +50,6 @@ export default async function CampaignDetailPage({ params }: Props) {
 
   if (!campaign) notFound();
 
-  const progress = progressPercent(campaign.raised_amount, campaign.target_amount);
-
   // Fetch investor count for this campaign
   const { count: investorCount } = await supabase
     .from("contributions")
@@ -66,8 +65,6 @@ export default async function CampaignDetailPage({ params }: Props) {
     .eq("published", true)
     .single();
 
-  const isOpen = campaign.status === "active";
-
   return (
     <div className="mx-auto max-w-5xl px-4 md:px-8 py-12">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
@@ -75,7 +72,7 @@ export default async function CampaignDetailPage({ params }: Props) {
         {/* ── Left: Main content ── */}
         <div className="lg:col-span-2 space-y-8">
           {/* Cover image */}
-          <div className="relative h-72 md:h-96 rounded-2xl overflow-hidden bg-earth-100">
+          <div className="relative h-64 sm:h-72 md:h-96 rounded-2xl overflow-hidden bg-earth-100">
             {campaign.cover_image_url ? (
               <Image src={campaign.cover_image_url} alt={campaign.title} fill className="object-cover" />
             ) : (
@@ -125,12 +122,14 @@ export default async function CampaignDetailPage({ params }: Props) {
                     </tr>
                   </thead>
                   <tbody>
-                    {campaign.items_needed.map((item: { name: string; quantity: number; unit: string; unit_cost_ghs: number }, i: number) => (
+                    {campaign.items_needed.map((item: { name: string; quantity: number; unit?: string; unit_cost_ghs: number }, i: number) => (
                       <tr key={i} className="border-b border-earth-50">
                         <td className="py-2.5 text-earth-700">{item.name}</td>
-                        <td className="py-2.5 text-right text-earth-500">{item.quantity} {item.unit}</td>
-                        <td className="py-2.5 text-right text-earth-500">{formatCurrency(item.unit_cost_ghs)}</td>
-                        <td className="py-2.5 text-right font-medium text-earth-700">{formatCurrency(item.unit_cost_ghs * item.quantity)}</td>
+                        <td className="py-2.5 text-right text-earth-500 whitespace-nowrap">
+                          {item.quantity}{item.unit?.trim() ? ` ${item.unit.trim()}` : ""}
+                        </td>
+                        <td className="py-2.5 text-right text-earth-500 whitespace-nowrap">{formatCurrency(item.unit_cost_ghs)}</td>
+                        <td className="py-2.5 text-right font-medium text-earth-700 whitespace-nowrap">{formatCurrency(item.unit_cost_ghs * item.quantity)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -141,16 +140,32 @@ export default async function CampaignDetailPage({ params }: Props) {
 
           {/* Impact report (if completed) */}
           {report && (
-            <div className="card p-6 bg-forest-50 border-forest-200">
-              <h2 className="font-display text-xl font-bold text-forest-800 mb-3">🎉 Impact Report</h2>
+            <div className="card p-5 sm:p-6 bg-forest-50 border-forest-200 space-y-4">
+              <h2 className="font-display text-xl font-bold text-forest-800">🎉 Impact Report</h2>
               <p className="text-forest-700 leading-relaxed">{report.summary}</p>
+              {report.items_delivered?.length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold text-forest-700 uppercase tracking-wide mb-2">
+                    Items delivered
+                  </p>
+                  <ul className="space-y-1">
+                    {report.items_delivered.map(
+                      (item: { name: string; quantity?: number; unit?: string }, i: number) => (
+                        <li key={i} className="text-sm text-forest-800 flex gap-2">
+                          <span className="text-forest-400">·</span>
+                          {formatDeliveredItem(item)}
+                        </li>
+                      )
+                    )}
+                  </ul>
+                </div>
+              )}
               {report.photos_urls?.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4">
-                  {report.photos_urls.slice(0, 6).map((url: string, i: number) => (
-                    <div key={i} className="relative h-32 rounded-lg overflow-hidden">
-                      <Image src={url} alt={`Impact photo ${i + 1}`} fill className="object-cover" />
-                    </div>
-                  ))}
+                <div className="pt-2">
+                  <ImpactPhotoGallery
+                    photos={report.photos_urls}
+                    title={report.title}
+                  />
                 </div>
               )}
             </div>

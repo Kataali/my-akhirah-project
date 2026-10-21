@@ -7,6 +7,7 @@ import SubmitButton from "@/components/ui/SubmitButton";
 import Link from "next/link";
 import { useState } from "react";
 import { CoverImageUploader } from "@/components/admin/PhotoUploader";
+import CampaignItemsInput from "@/components/admin/CampaignItemsInput";
 
 interface CampaignNewFormProps {
   createAction: (formData: FormData) => Promise<void>;
@@ -41,6 +42,7 @@ export default function CampaignNewForm({ createAction }: CampaignNewFormProps) 
   });
 
   const coverImageUrl = watch("cover_image_url") ?? "";
+  const itemsNeeded = watch("items_needed") ?? [];
 
   const onSubmit = async (data: CampaignValues) => {
     try {
@@ -182,19 +184,21 @@ export default function CampaignNewForm({ createAction }: CampaignNewFormProps) 
         </div>
 
         <div className="md:col-span-2">
-          <label className="label">Items needed (JSON)</label>
-          <textarea
-            {...register("items_needed", {
-              setValueAs: (v) => {
-                try { return typeof v === 'string' ? JSON.parse(v) : v; }
-                catch { return v; }
-              }
-            })}
-            rows={5}
-            className="input resize-none font-mono text-xs"
-            placeholder='[{"name": "Water filter", "quantity": 50, "unit": "units", "unit_cost_ghs": 80}]'
+          <CampaignItemsInput
+            value={itemsNeeded}
+            onChange={(items) =>
+              setValue("items_needed", items, {
+                shouldValidate: true,
+                shouldDirty: true,
+              })
+            }
+            onApplyTotal={(totalGhs) =>
+              setValue("target_amount", totalGhs, {
+                shouldValidate: true,
+                shouldDirty: true,
+              })
+            }
           />
-          <p className="text-xs text-earth-400 mt-1">JSON array of {"{ name, quantity, unit, unit_cost_ghs }"}</p>
         </div>
       </div>
 

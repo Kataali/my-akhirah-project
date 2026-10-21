@@ -6,9 +6,9 @@ import { campaignSchema, type CampaignValues } from "@/lib/validations";
 import SubmitButton from "@/components/ui/SubmitButton";
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Campaign } from "@/types/database";
 import { CoverImageUploader } from "@/components/admin/PhotoUploader";
+import CampaignItemsInput from "@/components/admin/CampaignItemsInput";
 
 interface CampaignEditFormProps {
   campaign: Campaign;
@@ -17,7 +17,6 @@ interface CampaignEditFormProps {
 
 export default function CampaignEditForm({ campaign, updateAction }: CampaignEditFormProps) {
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
   const availableStatuses = campaign.status === "draft" ? ["draft", "active"] : [campaign.status];
 
   const {
@@ -40,11 +39,19 @@ export default function CampaignEditForm({ campaign, updateAction }: CampaignEdi
       end_date: campaign.end_date,
       currency: campaign.currency,
       cover_image_url: campaign.cover_image_url ?? "",
-      items_needed: JSON.stringify(campaign.items_needed ?? [], null, 2) as any,
+      items_needed: Array.isArray(campaign.items_needed)
+        ? campaign.items_needed.map((item: any) => ({
+            name: item?.name ?? "",
+            quantity: Number(item?.quantity) || 1,
+            unit: item?.unit ?? "",
+            unit_cost_ghs: Number(item?.unit_cost_ghs) || 0,
+          }))
+        : [],
     },
   });
 
   const coverImageUrl = watch("cover_image_url") ?? "";
+  const itemsNeeded = watch("items_needed") ?? [];
 
   const onSubmit = async (data: CampaignValues) => {
     try {
@@ -192,17 +199,20 @@ export default function CampaignEditForm({ campaign, updateAction }: CampaignEdi
         </div>
 
         <div className="md:col-span-2">
-          <label className="label">Items needed (JSON)</label>
-          <textarea
-            {...register("items_needed", {
-              setValueAs: (v) => {
-                try { return typeof v === 'string' ? JSON.parse(v) : v; }
-                catch { return v; }
-              }
-            })}
-            rows={5}
-            className="input resize-none font-mono text-xs"
-            placeholder='[{"name": "Water Tank", "quantity": 1, "unit": "pc", "unit_cost_ghs": 1500}]'
+          <CampaignItemsInput
+            value={itemsNeeded}
+            onChange={(items) =>
+              setValue("items_needed", items, {
+                shouldValidate: true,
+                shouldDirty: true,
+              })
+            }
+            onApplyTotal={(totalGhs) =>
+              setValue("target_amount", totalGhs, {
+                shouldValidate: true,
+                shouldDirty: true,
+              })
+            }
           />
         </div>
       </div>

@@ -1,6 +1,15 @@
 // src/lib/validations.ts
 import * as z from "zod";
 
+export const campaignItemSchema = z.object({
+  name: z.string().min(1, "Item name is required"),
+  quantity: z.number().min(1, "Quantity must be at least 1"),
+  unit: z.string().optional().default(""),
+  unit_cost_ghs: z.number().min(0, "Unit cost must be 0 or greater"),
+});
+
+export type CampaignItemValue = z.infer<typeof campaignItemSchema>;
+
 export const campaignSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters").max(100),
   description: z.string().min(20, "Short description must be at least 20 characters").max(200),
@@ -19,12 +28,7 @@ export const campaignSchema = z.object({
     },
     z.string().url("Enter a valid image URL").nullable().optional(),
   ),
-  items_needed: z.array(z.object({
-    name: z.string(),
-    quantity: z.number(),
-    unit: z.string(),
-    unit_cost_ghs: z.number()
-  })).optional()
+  items_needed: z.array(campaignItemSchema).optional(),
 });
 
 export type CampaignValues = z.infer<typeof campaignSchema>;
@@ -37,10 +41,10 @@ export const impactReportSchema = z.object({
   photos_urls: z.array(z.string()).optional(),
   items_delivered: z.array(z.object({
     name: z.string(),
-    quantity: z.number(),
-    unit: z.string(),
-    unit_cost_ghs: z.number()
-  })).optional()
+    quantity: z.number().optional(),
+    unit: z.string().optional(),
+    unit_cost_ghs: z.number().optional(),
+  })).optional(),
 });
 
 export type ImpactReportValues = z.infer<typeof impactReportSchema>;
