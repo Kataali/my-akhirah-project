@@ -6,6 +6,7 @@ import { campaignSchema, type CampaignValues } from "@/lib/validations";
 import SubmitButton from "@/components/ui/SubmitButton";
 import Link from "next/link";
 import { useState } from "react";
+import { CoverImageUploader } from "@/components/admin/PhotoUploader";
 
 interface CampaignNewFormProps {
   createAction: (formData: FormData) => Promise<void>;
@@ -17,6 +18,8 @@ export default function CampaignNewForm({ createAction }: CampaignNewFormProps) 
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<CampaignValues>({
     resolver: zodResolver(campaignSchema),
@@ -36,6 +39,8 @@ export default function CampaignNewForm({ createAction }: CampaignNewFormProps) 
       ],
     },
   });
+
+  const coverImageUrl = watch("cover_image_url") ?? "";
 
   const onSubmit = async (data: CampaignValues) => {
     try {
@@ -163,15 +168,17 @@ export default function CampaignNewForm({ createAction }: CampaignNewFormProps) 
         </div>
 
         <div className="md:col-span-2">
-          <label className="label">Cover image URL</label>
-          <input
-            {...register("cover_image_url")}
-            type="url"
-            placeholder="https://..."
-            className={`input ${errors.cover_image_url ? "border-red-500" : ""}`}
+          <CoverImageUploader
+            value={coverImageUrl}
+            onChange={(url) =>
+              setValue("cover_image_url", url, {
+                shouldValidate: true,
+                shouldDirty: true,
+              })
+            }
+            error={errors.cover_image_url?.message}
+            folder="campaigns"
           />
-          {errors.cover_image_url && <p className="text-red-500 text-xs mt-1">{errors.cover_image_url.message}</p>}
-          <p className="text-xs text-earth-400 mt-1">Optional. Use a public image URL.</p>
         </div>
 
         <div className="md:col-span-2">

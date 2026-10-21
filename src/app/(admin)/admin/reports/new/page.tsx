@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { createAdminClient, createServerSupabaseClient, requireAdmin } from "@/lib/supabase/server";
 import SubmitButton from "@/components/ui/SubmitButton";
 import { parseDeliveredItems } from "@/lib/report-items";
+import { PhotoUploader } from "@/components/admin/PhotoUploader";
 
 async function createReport(formData: FormData) {
   "use server";
@@ -176,21 +177,7 @@ export default async function NewReportPage({
           />
         </div>
 
-        <div>
-          <label className="label">Photo URLs (one per line)</label>
-          <textarea
-            name="photos_urls"
-            rows={4}
-            className="input resize-none font-mono text-xs"
-            placeholder={
-              "https://.../photo1.jpg\nhttps://.../photo2.jpg, https://.../photo3.jpg"
-            }
-          />
-          <p className="text-xs text-earth-400 mt-1">
-            Upload photos to Supabase Storage first, then paste public URLs here
-            — use newlines or commas to separate multiple URLs.
-          </p>
-        </div>
+        <PhotoUploader name="photos_urls" folder="reports" />
 
         <div>
           <label className="label">Items delivered</label>

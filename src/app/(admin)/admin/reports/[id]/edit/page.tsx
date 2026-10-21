@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import SubmitButton from "@/components/ui/SubmitButton";
 import { createAdminClient, createServerSupabaseClient, requireAdmin } from "@/lib/supabase/server";
 import { parseDeliveredItems } from "@/lib/report-items";
+import { PhotoUploader } from "@/components/admin/PhotoUploader";
 
 async function updateReport(formData: FormData) {
   "use server";
@@ -158,15 +159,11 @@ export default async function EditReportPage({ params }: { params: { id: string 
             className="input"
           />
         </div>
-        <div>
-          <label className="label">Photo URLs (one per line)</label>
-          <textarea
-            name="photos_urls"
-            rows={4}
-            defaultValue={report.photos_urls.join("\n")}
-            className="input resize-none font-mono text-xs"
-          />
-        </div>
+        <PhotoUploader
+          name="photos_urls"
+          defaultUrls={report.photos_urls ?? []}
+          folder="reports"
+        />
         <div>
           <label className="label">Items delivered</label>
           <textarea

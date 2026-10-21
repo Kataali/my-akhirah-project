@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Campaign } from "@/types/database";
+import { CoverImageUploader } from "@/components/admin/PhotoUploader";
 
 interface CampaignEditFormProps {
   campaign: Campaign;
@@ -22,6 +23,8 @@ export default function CampaignEditForm({ campaign, updateAction }: CampaignEdi
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<CampaignValues>({
     resolver: zodResolver(campaignSchema),
@@ -40,6 +43,8 @@ export default function CampaignEditForm({ campaign, updateAction }: CampaignEdi
       items_needed: JSON.stringify(campaign.items_needed ?? [], null, 2) as any,
     },
   });
+
+  const coverImageUrl = watch("cover_image_url") ?? "";
 
   const onSubmit = async (data: CampaignValues) => {
     try {
@@ -173,15 +178,17 @@ export default function CampaignEditForm({ campaign, updateAction }: CampaignEdi
         </div>
 
         <div className="md:col-span-2">
-          <label className="label">Cover image URL</label>
-          <input
-            {...register("cover_image_url")}
-            type="url"
-            placeholder="https://..."
-            className={`input ${errors.cover_image_url ? "border-red-500" : ""}`}
+          <CoverImageUploader
+            value={coverImageUrl}
+            onChange={(url) =>
+              setValue("cover_image_url", url, {
+                shouldValidate: true,
+                shouldDirty: true,
+              })
+            }
+            error={errors.cover_image_url?.message}
+            folder="campaigns"
           />
-          {errors.cover_image_url && <p className="text-red-500 text-xs mt-1">{errors.cover_image_url.message}</p>}
-          <p className="text-xs text-earth-400 mt-1">Optional. Use a public image URL.</p>
         </div>
 
         <div className="md:col-span-2">
