@@ -157,7 +157,8 @@ export async function sendImpactReportNotification(params: {
  * when its impact report is published.
  */
 export async function notifyInvestorsOfImpactReport(params: {
-  campaignId: string;
+  campaignId?: string | null;
+  campaignTitle?: string | null;
   reportSummary: string;
 }) {
   if (process.env.NOTIFY_INVESTORS_ON_REPORT_PUBLISH === "false") {
@@ -166,43 +167,72 @@ export async function notifyInvestorsOfImpactReport(params: {
 
   try {
     const admin = createAdminClient();
-    const { data: campaign } = await admin
-      .from("campaigns")
-      .select("title, slug")
-      .eq("id", params.campaignId)
-      .single();
 
-    if (!campaign) return;
+    // If linked to a specific campaign, notify that campaign's contributors
+    if (params.campaignId) {
+      const { data: campaign } = await admin
+        .from("campaigns")
+        .select("title, slug")
+        .eq("id", params.campaignId)
+        .single();
 
-    const { data: contributions } = await admin
-      .from("contributions")
-      .select("guest_email, profiles(full_name, email)")
-      .eq("campaign_id", params.campaignId)
-      .eq("status", "success");
+      if (!campaign) return;
 
-    if (!contributions || contributions.length === 0) return;
+      const { data: contributions } = await admin
+        .from("contributions")
+        .select("guest_email, profiles(full_name, email)")
+        .eq("campaign_id", params.campaignId)
+        .eq("status", "success");
 
-    const recipients = new Map<string, string>();
-    for (const c of contributions) {
-      const prof = c.profiles as { full_name?: string | null; email?: string | null } | null;
-      const email = (prof?.email || c.guest_email || "").trim().toLowerCase();
-      if (!email) continue;
-      if (!recipients.has(email)) {
-        const name = prof?.full_name?.trim() || email.split("@")[0] || "Valued Investor";
-        recipients.set(email, name);
+      if (!contributions || contributions.length === 0) return;
+
+      const recipients = new Map<string, string>();
+      for (const c of contributions) {
+        const prof = c.profiles as { full_name?: string | null; email?: string | null } | null;
+        const email = (prof?.email || c.guest_email || "").trim().toLowerCase();
+        if (!email) continue;
+        if (!recipients.has(email)) {
+          const name = prof?.full_name?.trim() || email.split("@")[0] || "Valued Investor";
+          recipients.set(email, name);
+        }
       }
+
+      await Promise.allSettled(
+        Array.from(recipients.entries()).map(([to, investor_name]) =>
+          sendImpactReportNotification({
+            to,
+            investor_name,
+            campaign_title: campaign.title,
+            campaign_slug: campaign.slug,
+            report_summary: params.reportSummary,
+          })
+        )
+      );
+      return;
     }
 
+    // For legacy reports (no campaignId), notify registered investors
+    const { data: investors } = await admin
+      .from("profiles")
+      .select("email, full_name")
+      .eq("role", "investor");
+
+    if (!investors || investors.length === 0) return;
+
+    const title = params.campaignTitle?.trim() || "Community Impact Report";
     await Promise.allSettled(
-      Array.from(recipients.entries()).map(([to, investor_name]) =>
-        sendImpactReportNotification({
-          to,
-          investor_name,
-          campaign_title: campaign.title,
-          campaign_slug: campaign.slug,
-          report_summary: params.reportSummary,
-        })
-      )
+      investors
+        .filter((inv) => Boolean(inv.email))
+        .map((inv) =>
+          sendImpactReportNotification({
+            to: inv.email,
+            investor_name:
+              inv.full_name?.trim() || inv.email.split("@")[0] || "Valued Investor",
+            campaign_title: title,
+            campaign_slug: "",
+            report_summary: params.reportSummary,
+          })
+        )
     );
   } catch (err) {
     console.error("Failed to send impact report notifications:", err);

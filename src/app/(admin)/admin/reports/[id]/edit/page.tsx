@@ -17,7 +17,7 @@ async function updateReport(formData: FormData) {
 
   const { data: existing, error: reportError } = await admin
     .from("impact_reports")
-    .select("campaign_id, published")
+    .select("campaign_id, campaign_title, published")
     .eq("id", reportId)
     .single();
 
@@ -73,16 +73,19 @@ async function updateReport(formData: FormData) {
 
   if (error) throw new Error(error.message);
 
-  if (requestedPublished && existing.campaign_id) {
-    await admin
-      .from("campaigns")
-      .update({ status: "completed" })
-      .eq("id", existing.campaign_id)
-      .eq("status", "funded");
+  if (requestedPublished) {
+    if (existing.campaign_id) {
+      await admin
+        .from("campaigns")
+        .update({ status: "completed" })
+        .eq("id", existing.campaign_id)
+        .eq("status", "funded");
+    }
 
-    if (!existing.published && notifyInvestors) {
+    if (notifyInvestors) {
       await notifyInvestorsOfImpactReport({
         campaignId: existing.campaign_id,
+        campaignTitle: existing.campaign_title,
         reportSummary: formData.get("summary") as string,
       });
     }
@@ -200,25 +203,25 @@ export default async function EditReportPage({ params }: { params: { id: string 
             )}
           </div>
 
-          {!report.published && report.campaign_id && (
-            <label className="flex items-start gap-2.5 cursor-pointer select-none rounded-lg border border-earth-200 bg-earth-50/50 p-3">
-              <input
-                type="checkbox"
-                name="notify_investors"
-                value="true"
-                defaultChecked
-                className="mt-0.5 h-4 w-4 rounded border-earth-300 text-earth-600 focus:ring-earth-500"
-              />
-              <div>
-                <span className="block text-sm font-medium text-earth-800">
-                  Notify investors by email when published
-                </span>
-                <span className="block text-xs text-earth-500">
-                  Uncheck this if you want to publish the report silently without emailing contributors.
-                </span>
-              </div>
-            </label>
-          )}
+          <label className="flex items-start gap-2.5 cursor-pointer select-none rounded-lg border border-earth-200 bg-earth-50/50 p-3">
+            <input
+              type="checkbox"
+              name="notify_investors"
+              value="true"
+              defaultChecked={!report.published}
+              className="mt-0.5 h-4 w-4 rounded border-earth-300 text-earth-600 focus:ring-earth-500"
+            />
+            <div>
+              <span className="block text-sm font-medium text-earth-800">
+                Notify investors by email when saving as published
+              </span>
+              <span className="block text-xs text-earth-500">
+                {report.published
+                  ? "Check this if you want to send (or re-send) the impact report email to this campaign's contributors."
+                  : "Uncheck this if you want to publish the report silently without emailing contributors."}
+              </span>
+            </div>
+          </label>
         </div>
         <div className="flex justify-end gap-3 pt-2">
           <a href="/admin/reports" className="btn-secondary">

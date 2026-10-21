@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { createAdminClient, requireAdmin } from "@/lib/supabase/server";
 import SubmitButton from "@/components/ui/SubmitButton";
 import { parseDeliveredItems } from "@/lib/report-items";
+import { notifyInvestorsOfImpactReport } from "@/lib/email";
 import { PhotoUploader } from "@/components/admin/PhotoUploader";
 import DeliveredItemsInput from "@/components/admin/DeliveredItemsInput";
 
@@ -28,9 +29,11 @@ async function createLegacyReport(formData: FormData) {
   );
 
   const published = formData.get("published") === "true";
+  const notifyInvestors = formData.get("notify_investors") === "true";
   const event_date = (formData.get("event_date") as string) || null;
   const campaign_location =
     (formData.get("campaign_location") as string) || null;
+  const summary = formData.get("summary") as string;
 
   const { error } = await admin.from("impact_reports").insert({
     campaign_id: null,
@@ -38,7 +41,7 @@ async function createLegacyReport(formData: FormData) {
     campaign_location,
     event_date,
     title: formData.get("title") as string,
-    summary: formData.get("summary") as string,
+    summary,
     photos_urls,
     items_delivered,
     beneficiaries_reached:
@@ -48,6 +51,14 @@ async function createLegacyReport(formData: FormData) {
   });
 
   if (error) throw new Error(error.message);
+
+  if (published && notifyInvestors) {
+    await notifyInvestorsOfImpactReport({
+      campaignId: null,
+      campaignTitle: campaign_title,
+      reportSummary: summary,
+    });
+  }
 
   redirect("/admin/reports");
 }
@@ -136,12 +147,32 @@ export default function NewLegacyReportPage() {
 
         <DeliveredItemsInput name="items_delivered" />
 
-        <div>
-          <label className="label">Publish immediately?</label>
-          <select name="published" className="input">
-            <option value="false">Save as draft</option>
-            <option value="true">Publish now (notifies investors)</option>
-          </select>
+        <div className="space-y-3">
+          <div>
+            <label className="label">Publish immediately?</label>
+            <select name="published" className="input">
+              <option value="false">Save as draft</option>
+              <option value="true">Publish now</option>
+            </select>
+          </div>
+
+          <label className="flex items-start gap-2.5 cursor-pointer select-none rounded-lg border border-earth-200 bg-earth-50/50 p-3">
+            <input
+              type="checkbox"
+              name="notify_investors"
+              value="true"
+              defaultChecked={false}
+              className="mt-0.5 h-4 w-4 rounded border-earth-300 text-earth-600 focus:ring-earth-500"
+            />
+            <div>
+              <span className="block text-sm font-medium text-earth-800">
+                Notify registered investors by email when published
+              </span>
+              <span className="block text-xs text-earth-500">
+                Check this if you want to email registered investors about this legacy impact report.
+              </span>
+            </div>
+          </label>
         </div>
 
         <div className="flex justify-end gap-3 pt-2">
