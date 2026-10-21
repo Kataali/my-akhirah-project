@@ -1,8 +1,39 @@
 // src/app/(admin)/admin/campaigns/page.tsx
 import Link from "next/link";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
+import { createAdminClient, createServerSupabaseClient, requireAdmin } from "@/lib/supabase/server";
 import { formatCurrency, progressPercent, formatDate } from "@/lib/utils";
-import { Plus } from "lucide-react";
+import { Plus, Pencil } from "lucide-react";
+import DeleteButton from "@/components/admin/DeleteButton";
+
+async function deleteDraftCampaign(formData: FormData) {
+  "use server";
+
+  await requireAdmin();
+  const admin = createAdminClient();
+  const id = formData.get("id") as string;
+
+  const { data: campaign } = await admin
+    .from("campaigns")
+    .select("status")
+    .eq("id", id)
+    .single();
+
+  if (!campaign) throw new Error("Campaign not found.");
+  if (campaign.status !== "draft") {
+    throw new Error("Only draft campaigns can be deleted.");
+  }
+
+  const { error } = await admin
+    .from("campaigns")
+    .delete()
+    .eq("id", id)
+    .eq("status", "draft");
+
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/admin/campaigns");
+}
 
 export default async function AdminCampaignsPage() {
   const supabase = createServerSupabaseClient();
@@ -40,7 +71,7 @@ export default async function AdminCampaignsPage() {
                 <th className="px-5 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">Progress</th>
                 <th className="px-5 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">Status</th>
                 <th className="px-5 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">Created</th>
-                <th className="px-5 py-3"></th>
+                <th className="px-5 py-3 text-right text-xs font-semibold text-earth-500 uppercase tracking-wide">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-earth-50">
@@ -71,9 +102,21 @@ export default async function AdminCampaignsPage() {
                       {formatDate(campaign.created_at)}
                     </td>
                     <td className="px-5 py-4 text-right whitespace-nowrap">
-                      <Link href={`/admin/campaigns/${campaign.id}/edit`} className="btn-ghost text-xs py-1 px-3">
-                        Edit
-                      </Link>
+                      <div className="inline-flex items-center justify-end gap-3">
+                        <Link
+                          href={`/admin/campaigns/${campaign.id}/edit`}
+                          className="text-earth-600 hover:text-earth-800 inline-flex items-center gap-1 text-xs font-semibold"
+                        >
+                          <Pencil size={13} /> Edit
+                        </Link>
+                        {campaign.status === "draft" && (
+                          <DeleteButton
+                            id={campaign.id}
+                            confirmMessage={`Delete draft campaign "${campaign.title}"?`}
+                            deleteAction={deleteDraftCampaign}
+                          />
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );

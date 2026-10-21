@@ -1,8 +1,37 @@
 // src/app/(admin)/admin/reports/page.tsx
 import Link from "next/link";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
+import { createAdminClient, createServerSupabaseClient, requireAdmin } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
 import { Pencil, Plus } from "lucide-react";
+import DeleteButton from "@/components/admin/DeleteButton";
+
+async function deleteImpactReport(formData: FormData) {
+  "use server";
+
+  await requireAdmin();
+  const admin = createAdminClient();
+  const id = formData.get("id") as string;
+
+  const { data: report } = await admin
+    .from("impact_reports")
+    .select("id, campaign_id, published")
+    .eq("id", id)
+    .single();
+
+  if (!report) throw new Error("Report not found.");
+  if (report.published && report.campaign_id) {
+    throw new Error(
+      "Published campaign reports cannot be deleted. You can edit the report instead."
+    );
+  }
+
+  const { error } = await admin.from("impact_reports").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/admin/reports");
+  revalidatePath("/impact");
+}
 
 export default async function AdminReportsPage() {
   const supabase = createServerSupabaseClient();
@@ -94,8 +123,8 @@ export default async function AdminReportsPage() {
                   <th className="px-5 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">
                     Date
                   </th>
-                  <th className="px-5 py-3 text-xs font-semibold text-earth-500 uppercase tracking-wide">
-                    Action
+                  <th className="px-5 py-3 text-right text-xs font-semibold text-earth-500 uppercase tracking-wide">
+                    Actions
                   </th>
                 </tr>
               </thead>
@@ -107,6 +136,7 @@ export default async function AdminReportsPage() {
                   } | null;
                   const displayCampaignTitle =
                     campaign?.title ?? report.campaign_title ?? "";
+                  const canDelete = !report.published || !report.campaign_id;
                   return (
                     <tr key={report.id} className="hover:bg-earth-50/50">
                       <td className="px-5 py-4 font-medium text-earth-800">
@@ -129,13 +159,22 @@ export default async function AdminReportsPage() {
                       <td className="px-5 py-4 text-earth-400 text-xs whitespace-nowrap">
                         {formatDate(report.created_at)}
                       </td>
-                      <td className="px-5 py-4 whitespace-nowrap">
-                        <Link
-                          href={`/admin/reports/${report.id}/edit`}
-                          className="text-earth-600 hover:text-earth-800 inline-flex items-center gap-1 text-xs font-semibold"
-                        >
-                          <Pencil size={13} /> Edit
-                        </Link>
+                      <td className="px-5 py-4 text-right whitespace-nowrap">
+                        <div className="inline-flex items-center justify-end gap-3">
+                          <Link
+                            href={`/admin/reports/${report.id}/edit`}
+                            className="text-earth-600 hover:text-earth-800 inline-flex items-center gap-1 text-xs font-semibold"
+                          >
+                            <Pencil size={13} /> Edit
+                          </Link>
+                          {canDelete && (
+                            <DeleteButton
+                              id={report.id}
+                              confirmMessage={`Delete report "${report.title}"?`}
+                              deleteAction={deleteImpactReport}
+                            />
+                          )}
+                        </div>
                       </td>
                     </tr>
                   );
