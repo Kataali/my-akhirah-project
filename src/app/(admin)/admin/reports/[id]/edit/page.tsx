@@ -13,6 +13,7 @@ async function updateReport(formData: FormData) {
   const admin = createAdminClient();
   const reportId = formData.get("id") as string;
   const requestedPublished = formData.get("published") === "true";
+  const notifyInvestors = formData.get("notify_investors") === "true";
 
   const { data: existing, error: reportError } = await admin
     .from("impact_reports")
@@ -79,7 +80,7 @@ async function updateReport(formData: FormData) {
       .eq("id", existing.campaign_id)
       .eq("status", "funded");
 
-    if (!existing.published) {
+    if (!existing.published && notifyInvestors) {
       await notifyInvestorsOfImpactReport({
         campaignId: existing.campaign_id,
         reportSummary: formData.get("summary") as string,
@@ -177,24 +178,46 @@ export default async function EditReportPage({ params }: { params: { id: string 
           name="items_delivered"
           defaultItems={report.items_delivered ?? []}
         />
-        <div>
-          <label className="label">Status</label>
-          <select
-            name="published"
-            className="input"
-            defaultValue={String(report.published)}
-          >
-            {!report.published && <option value="false">Draft</option>}
-            <option value="true">Published</option>
-          </select>
-          {report.published ? (
-            <p className="text-xs text-earth-400 mt-1">
-              Published reports remain published.
-            </p>
-          ) : (
-            <p className="text-xs text-earth-400 mt-1">
-              Publishing this report will mark its campaign as completed.
-            </p>
+        <div className="space-y-3">
+          <div>
+            <label className="label">Status</label>
+            <select
+              name="published"
+              className="input"
+              defaultValue={String(report.published)}
+            >
+              {!report.published && <option value="false">Draft</option>}
+              <option value="true">Published</option>
+            </select>
+            {report.published ? (
+              <p className="text-xs text-earth-400 mt-1">
+                Published reports remain published.
+              </p>
+            ) : (
+              <p className="text-xs text-earth-400 mt-1">
+                Publishing this report will mark its campaign as completed.
+              </p>
+            )}
+          </div>
+
+          {!report.published && report.campaign_id && (
+            <label className="flex items-start gap-2.5 cursor-pointer select-none rounded-lg border border-earth-200 bg-earth-50/50 p-3">
+              <input
+                type="checkbox"
+                name="notify_investors"
+                value="true"
+                defaultChecked
+                className="mt-0.5 h-4 w-4 rounded border-earth-300 text-earth-600 focus:ring-earth-500"
+              />
+              <div>
+                <span className="block text-sm font-medium text-earth-800">
+                  Notify investors by email when published
+                </span>
+                <span className="block text-xs text-earth-500">
+                  Uncheck this if you want to publish the report silently without emailing contributors.
+                </span>
+              </div>
+            </label>
           )}
         </div>
         <div className="flex justify-end gap-3 pt-2">

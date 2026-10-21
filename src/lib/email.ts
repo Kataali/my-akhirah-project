@@ -160,6 +160,10 @@ export async function notifyInvestorsOfImpactReport(params: {
   campaignId: string;
   reportSummary: string;
 }) {
+  if (process.env.NOTIFY_INVESTORS_ON_REPORT_PUBLISH === "false") {
+    return;
+  }
+
   try {
     const admin = createAdminClient();
     const { data: campaign } = await admin

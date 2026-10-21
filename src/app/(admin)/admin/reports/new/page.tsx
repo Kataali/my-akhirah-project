@@ -47,6 +47,7 @@ async function createReport(formData: FormData) {
   );
 
   const published = formData.get("published") === "true";
+  const notifyInvestors = formData.get("notify_investors") === "true";
 
   const campaign_title = (formData.get("campaign_title") as string) || null;
 
@@ -74,10 +75,12 @@ async function createReport(formData: FormData) {
       .eq("id", campaign_id)
       .eq("status", "funded");
 
-    await notifyInvestorsOfImpactReport({
-      campaignId: campaign_id,
-      reportSummary: formData.get("summary") as string,
-    });
+    if (notifyInvestors) {
+      await notifyInvestorsOfImpactReport({
+        campaignId: campaign_id,
+        reportSummary: formData.get("summary") as string,
+      });
+    }
   }
 
   redirect("/admin/reports");
@@ -191,12 +194,32 @@ export default async function NewReportPage({
           defaultItems={campaign?.items_needed ?? []}
         />
 
-        <div>
-          <label className="label">Publish immediately?</label>
-          <select name="published" className="input">
-            <option value="false">Save as draft</option>
-            <option value="true">Publish now (notifies investors)</option>
-          </select>
+        <div className="space-y-3">
+          <div>
+            <label className="label">Publish immediately?</label>
+            <select name="published" className="input">
+              <option value="false">Save as draft</option>
+              <option value="true">Publish now</option>
+            </select>
+          </div>
+
+          <label className="flex items-start gap-2.5 cursor-pointer select-none rounded-lg border border-earth-200 bg-earth-50/50 p-3">
+            <input
+              type="checkbox"
+              name="notify_investors"
+              value="true"
+              defaultChecked
+              className="mt-0.5 h-4 w-4 rounded border-earth-300 text-earth-600 focus:ring-earth-500"
+            />
+            <div>
+              <span className="block text-sm font-medium text-earth-800">
+                Notify investors by email when published
+              </span>
+              <span className="block text-xs text-earth-500">
+                Sends an impact summary email to all contributors of this campaign if published now.
+              </span>
+            </div>
+          </label>
         </div>
 
         <div className="flex justify-end gap-3 pt-2">
