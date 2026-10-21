@@ -113,7 +113,7 @@ export default function InvestPage({ params }: { params: { slug: string } }) {
   }
 
   return (
-    <div className="mx-auto max-w-lg px-4 py-12">
+    <div className="mx-auto max-w-lg px-4 py-10 sm:py-12">
       <Link
         href={`/campaigns/${campaign.slug}`}
         className="btn-ghost mb-6 -ml-2 text-earth-500"
@@ -121,7 +121,7 @@ export default function InvestPage({ params }: { params: { slug: string } }) {
         <ArrowLeft size={16} /> Back to campaign
       </Link>
 
-      <div className="card p-8">
+      <div className="card p-5 sm:p-8">
         <h1 className="font-display text-2xl font-bold text-earth-900 mb-1">
           Make a contribution
         </h1>
@@ -131,7 +131,7 @@ export default function InvestPage({ params }: { params: { slug: string } }) {
 
         {!user && (
           <div className="mb-6 rounded-lg bg-earth-50 border border-earth-200 p-4 text-sm text-earth-600">
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
               <Link
                 href={`/auth/login?redirect=/invest/${campaign.slug}`}
                 className="text-earth-700 font-semibold underline"
@@ -172,7 +172,7 @@ export default function InvestPage({ params }: { params: { slug: string } }) {
           {/* Preset amounts */}
           <div>
             <label className="label">Amount (GHS)</label>
-            <div className="grid grid-cols-5 gap-2 mb-3">
+            <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mb-3">
               {PRESET_AMOUNTS.map((preset) => (
                 <button
                   key={preset}
@@ -223,8 +223,8 @@ export default function InvestPage({ params }: { params: { slug: string } }) {
               : `Contribute ${amount ? formatCurrency(parseFloat(amount)) : ""}`}
           </button>
 
-          <p className="flex items-center justify-center gap-1.5 text-xs text-earth-400">
-            <Lock size={12} /> Secure payment via Paystack · Card or Mobile
+          <p className="flex items-center justify-center gap-1.5 text-xs text-earth-400 text-center">
+            <Lock size={12} className="shrink-0" /> Secure payment via Paystack · Card or Mobile
             Money
           </p>
         </form>

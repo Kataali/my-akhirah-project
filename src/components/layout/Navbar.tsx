@@ -36,17 +36,17 @@ export default function Navbar({
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-earth-200/60 bg-sand-50/90 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-8">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-4 md:px-8">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-2.5 sm:gap-3 min-w-0">
           <Image
             src="/images/logo.jpg"
             alt="My Akhira Foundation"
             width={36}
             height={36}
-            className="rounded-sm"
+            className="rounded-sm shrink-0"
           />
-          <span className="font-display text-xl font-bold text-earth-700">
+          <span className="font-display text-base sm:text-xl font-bold text-earth-700 truncate">
             My Akhira Foundation
           </span>
         </Link>
@@ -98,7 +98,11 @@ export default function Navbar({
         </div>
 
         {/* Mobile hamburger */}
-        <button className="md:hidden p-2" onClick={() => setOpen(!open)}>
+        <button
+          className="md:hidden p-2 shrink-0 text-earth-700"
+          onClick={() => setOpen(!open)}
+          aria-label="Toggle navigation menu"
+        >
           {open ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>

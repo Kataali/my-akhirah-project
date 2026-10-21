@@ -40,23 +40,23 @@ export default async function HomePage() {
       <section className="relative overflow-hidden bg-earth-900 text-white">
         <div className="absolute inset-0 opacity-20"
           style={{ backgroundImage: "url('/images/hero-pattern.svg')", backgroundSize: "60px" }} />
-        <div className="relative mx-auto max-w-6xl px-4 md:px-8 py-24 md:py-36">
+        <div className="relative mx-auto max-w-6xl px-4 md:px-8 py-20 md:py-36">
           <div className="max-w-2xl">
             <span className="inline-block mb-4 rounded-full bg-earth-500/30 border border-earth-400/40 px-4 py-1 text-xs font-semibold text-earth-200 uppercase tracking-widest">
               Sadaqah Jariyah
             </span>
-            <h1 className="font-display text-4xl md:text-6xl font-bold leading-tight mb-6">
+            <h1 className="font-display text-3xl sm:text-4xl md:text-6xl font-bold leading-tight mb-6">
               Invest in the <span className="text-earth-400">Hereafter</span>.
               Change lives today.
             </h1>
-            <p className="text-lg md:text-xl text-earth-200 leading-relaxed mb-8">
+            <p className="text-base sm:text-lg md:text-xl text-earth-200 leading-relaxed mb-8">
               My Akhira Foundation channels your investments into delivering essential items — food, water, medicine, and shelter — to remote communities across Northern Ghana.
             </p>
-            <div className="flex flex-wrap gap-4">
-              <Link href="/campaigns" className="btn-primary bg-earth-500 hover:bg-earth-400 text-base px-7 py-3">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
+              <Link href="/campaigns" className="btn-primary bg-earth-500 hover:bg-earth-400 text-base px-7 py-3 w-full sm:w-auto">
                 View Campaigns <ArrowRight size={18} />
               </Link>
-              <Link href="/about" className="btn-secondary border-earth-600 text-earth-100 bg-transparent hover:bg-earth-800 text-base px-7 py-3">
+              <Link href="/about" className="btn-secondary border-earth-600 text-earth-100 bg-transparent hover:bg-earth-800 text-base px-7 py-3 w-full sm:w-auto">
                 Our Story
               </Link>
             </div>
@@ -66,7 +66,7 @@ export default async function HomePage() {
 
       {/* ── Stats ── */}
       <section className="border-b border-earth-100 bg-white py-10">
-        <div className="mx-auto max-w-6xl px-4 md:px-8 grid grid-cols-2 md:grid-cols-3 gap-6 text-center">
+        <div className="mx-auto max-w-6xl px-4 md:px-8 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
           {[
             { icon: Heart, label: "Raised", value: `GHS ${(totalRaised / 1000).toFixed(0)}k+` },
             { icon: Users, label: "Investors", value: `${investorCount ?? 0}+` },
@@ -82,7 +82,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── Active Campaigns ── */}
-      <section className="py-20 px-4 md:px-8">
+      <section className="py-16 md:py-20 px-4 md:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="flex items-end justify-between mb-10">
             <div>
@@ -111,7 +111,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── How it works ── */}
-      <section className="bg-earth-50 py-20 px-4 md:px-8">
+      <section className="bg-earth-50 py-16 md:py-20 px-4 md:px-8">
         <div className="mx-auto max-w-4xl text-center">
           <p className="text-xs font-semibold uppercase tracking-widest text-earth-400 mb-2">The process</p>
           <h2 className="section-heading mb-12">How it works</h2>
@@ -132,7 +132,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── CTA ── */}
-      <section className="py-20 px-4 md:px-8 bg-earth-700 text-white text-center">
+      <section className="py-16 md:py-20 px-4 md:px-8 bg-earth-700 text-white text-center">
         <div className="mx-auto max-w-2xl">
           <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
             Every contribution counts
@@ -140,7 +140,7 @@ export default async function HomePage() {
           <p className="text-earth-200 text-lg mb-8">
             Join hundreds of investors building their akhirah while transforming lives in Northern Ghana.
           </p>
-          <Link href="/campaigns" className="btn-primary bg-earth-400 hover:bg-earth-300 text-earth-900 text-base px-8 py-3">
+          <Link href="/campaigns" className="btn-primary bg-earth-400 hover:bg-earth-300 text-earth-900 text-base px-8 py-3 w-full sm:w-auto">
             Start investing today
           </Link>
         </div>

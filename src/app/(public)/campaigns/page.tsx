@@ -46,12 +46,12 @@ export default async function CampaignsPage({ searchParams }: { searchParams: Se
       </div>
 
       {/* Status filter tabs */}
-      <div className="flex gap-2 mb-8 border-b border-earth-100 pb-4">
+      <div className="flex flex-wrap gap-2 mb-8 border-b border-earth-100 pb-4">
         {FILTERS.map(({ value, label }) => (
           <a
             key={value}
             href={`/campaigns?status=${value}`}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+            className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
               filter === value
                 ? "bg-earth-500 text-white"
                 : "text-earth-500 hover:bg-earth-50"

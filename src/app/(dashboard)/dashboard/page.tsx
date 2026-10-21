@@ -52,11 +52,11 @@ export default async function DashboardPage({
       {/* Header */}
       <div className="mb-10">
         <p className="text-xs font-semibold uppercase tracking-widest text-earth-400 mb-1">Welcome back</p>
-        <h1 className="section-heading">{profile?.full_name ?? profile?.email?.split("@")[0] ?? "Investor"}</h1>
+        <h1 className="section-heading break-words">{profile?.full_name ?? profile?.email?.split("@")[0] ?? "Investor"}</h1>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
         {[
           { icon: TrendingUp, label: "Total contributed", value: formatCurrency(totalContributed) },
           { icon: Heart, label: "Campaigns supported", value: String(uniqueCampaigns) },
@@ -64,7 +64,7 @@ export default async function DashboardPage({
         ].map(({ icon: Icon, label, value }) => (
           <div key={label} className="card p-5">
             <Icon size={18} className="text-earth-300 mb-2" />
-            <p className="font-display text-2xl font-bold text-earth-800">{value}</p>
+            <p className="font-display text-2xl font-bold text-earth-800 break-words">{value}</p>
             <p className="text-xs text-earth-400 mt-1">{label}</p>
           </div>
         ))}
@@ -72,7 +72,7 @@ export default async function DashboardPage({
 
       {/* Contributions list */}
       <div>
-        <div className="flex items-center justify-between mb-5">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-5">
           <h2 className="font-display text-xl font-bold text-earth-800">Your Contributions</h2>
           <Link href="/campaigns" className="btn-ghost text-sm flex items-center gap-1 text-earth-500">
             Find new campaigns <ArrowRight size={14} />
@@ -88,8 +88,8 @@ export default async function DashboardPage({
               };
               const prog = progressPercent(camp.raised_amount, camp.target_amount);
               return (
-                <div key={c.id} className="card p-5 flex flex-col md:flex-row md:items-center gap-4">
-                  <div className="flex-1">
+                <div key={c.id} className="card p-4 sm:p-5 flex flex-col md:flex-row md:items-center gap-4">
+                  <div className="flex-1 min-w-0">
                     <Link href={`/campaigns/${camp.slug}`} className="font-semibold text-earth-800 hover:text-earth-600 transition-colors">
                       {camp.title}
                     </Link>
@@ -98,7 +98,7 @@ export default async function DashboardPage({
                       <div className="progress-fill" style={{ width: `${prog}%` }} />
                     </div>
                   </div>
-                  <div className="text-right">
+                  <div className="flex md:block items-center justify-between pt-3 md:pt-0 border-t md:border-t-0 border-earth-50 md:text-right">
                     <p className="font-bold text-earth-700">{formatCurrency(c.amount)}</p>
                     <span className={`text-xs capitalize px-2 py-0.5 rounded-full ${
                       camp.status === "completed" ? "bg-forest-100 text-forest-700" : "bg-earth-100 text-earth-600"
