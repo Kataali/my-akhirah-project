@@ -4,6 +4,15 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
 import { formatDeliveredItem } from "@/lib/report-items";
 import ImpactPhotoGallery from "@/components/impact/ImpactPhotoGallery";
+import type { ImpactReport } from "@/types/database";
+
+type ReportWithCampaign = ImpactReport & {
+  campaigns?: {
+    title: string;
+    location: string;
+    slug: string;
+  } | null;
+};
 
 export const metadata: Metadata = {
   title: "Impact",
@@ -20,11 +29,13 @@ export default async function ImpactPage() {
     .order("event_date", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false });
 
-  const reports = (rawReports ?? []).slice().sort((a, b) => {
-    const dateA = new Date(a.event_date ?? a.created_at).getTime();
-    const dateB = new Date(b.event_date ?? b.created_at).getTime();
-    return dateB - dateA;
-  });
+  const reports: ReportWithCampaign[] = ((rawReports as ReportWithCampaign[] | null) ?? [])
+    .slice()
+    .sort((a: ReportWithCampaign, b: ReportWithCampaign) => {
+      const dateA = new Date(a.event_date ?? a.created_at).getTime();
+      const dateB = new Date(b.event_date ?? b.created_at).getTime();
+      return dateB - dateA;
+    });
 
   return (
     <div className="mx-auto max-w-6xl px-4 md:px-8 py-12">

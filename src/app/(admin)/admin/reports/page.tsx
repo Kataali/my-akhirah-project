@@ -5,6 +5,14 @@ import { createAdminClient, createServerSupabaseClient, requireAdmin } from "@/l
 import { formatDate } from "@/lib/utils";
 import { Pencil, Plus } from "lucide-react";
 import DeleteButton from "@/components/admin/DeleteButton";
+import type { ImpactReport } from "@/types/database";
+
+type AdminReportRow = ImpactReport & {
+  campaigns?: {
+    title: string;
+    location: string;
+  } | null;
+};
 
 async function deleteImpactReport(formData: FormData) {
   "use server";
@@ -49,11 +57,13 @@ export default async function AdminReportsPage() {
     .order("event_date", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false });
 
-  const reports = (rawReports ?? []).slice().sort((a, b) => {
-    const dateA = new Date(a.event_date ?? a.created_at).getTime();
-    const dateB = new Date(b.event_date ?? b.created_at).getTime();
-    return dateB - dateA;
-  });
+  const reports: AdminReportRow[] = ((rawReports as AdminReportRow[] | null) ?? [])
+    .slice()
+    .sort((a: AdminReportRow, b: AdminReportRow) => {
+      const dateA = new Date(a.event_date ?? a.created_at).getTime();
+      const dateB = new Date(b.event_date ?? b.created_at).getTime();
+      return dateB - dateA;
+    });
 
   const reportedCampaignIds = new Set(reports?.map((r) => r.campaign_id));
   const awaitingCampaigns = (campaigns ?? []).filter((campaign) => !reportedCampaignIds.has(campaign.id));
