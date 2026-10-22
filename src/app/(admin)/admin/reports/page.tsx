@@ -43,10 +43,17 @@ export default async function AdminReportsPage() {
     .in("status", ["funded", "completed"])
     .order("updated_at", { ascending: false });
 
-  const { data: reports } = await supabase
+  const { data: rawReports } = await supabase
     .from("impact_reports")
     .select("*, campaigns(title, location)")
+    .order("event_date", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false });
+
+  const reports = (rawReports ?? []).slice().sort((a, b) => {
+    const dateA = new Date(a.event_date ?? a.created_at).getTime();
+    const dateB = new Date(b.event_date ?? b.created_at).getTime();
+    return dateB - dateA;
+  });
 
   const reportedCampaignIds = new Set(reports?.map((r) => r.campaign_id));
   const awaitingCampaigns = (campaigns ?? []).filter((campaign) => !reportedCampaignIds.has(campaign.id));
@@ -157,7 +164,7 @@ export default async function AdminReportsPage() {
                         </span>
                       </td>
                       <td className="px-5 py-4 text-earth-400 text-xs whitespace-nowrap">
-                        {formatDate(report.created_at)}
+                        {formatDate(report.event_date ?? report.created_at)}
                       </td>
                       <td className="px-5 py-4 text-right whitespace-nowrap">
                         <div className="inline-flex items-center justify-end gap-3">

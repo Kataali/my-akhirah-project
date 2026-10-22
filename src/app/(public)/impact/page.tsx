@@ -13,11 +13,18 @@ export const metadata: Metadata = {
 export default async function ImpactPage() {
   const supabase = createServerSupabaseClient();
 
-  const { data: reports } = await supabase
+  const { data: rawReports } = await supabase
     .from("impact_reports")
     .select("*, campaigns(title, location, slug)")
     .eq("published", true)
+    .order("event_date", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false });
+
+  const reports = (rawReports ?? []).slice().sort((a, b) => {
+    const dateA = new Date(a.event_date ?? a.created_at).getTime();
+    const dateB = new Date(b.event_date ?? b.created_at).getTime();
+    return dateB - dateA;
+  });
 
   return (
     <div className="mx-auto max-w-6xl px-4 md:px-8 py-12">
